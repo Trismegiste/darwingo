@@ -29,11 +29,7 @@ func main() {
 	}
 
 	for f1 := 0; f1 < poolSize; f1++ {
-		for f2 := 0; f2 < poolSize; f2++ {
-			if f1 == f2 {
-				continue
-			}
-
+		for f2 := 0; f2 < f1; f2++ {
 			// initialise fight
 			//	fmt.Println("Fighting", f1, "versus", f2)
 			fighter1 := &pool[f1]
@@ -64,10 +60,25 @@ func main() {
 
 	// stat on current epoch
 	slices.SortFunc(pool, func(a, b Fighter) int {
-		return b.winning - a.winning
+		return b.victory - a.victory
 	})
 
 	for k := 0; k < 10; k++ {
 		fmt.Println(pool[k])
 	}
+	// on compte les victoires indépendamment du coût
+	// Puis on regroupe les npc par COST pour déterminer qui a la plus de victoire pour un COST donné.
+	// Et ensuite on duplique/mute les gagnants de chaque COST. On peut en générer autant qu'il y a de NPC dans un COST donné
+	// De cette façon, on ne change pas le profil de puissance globale
+
+	// Il faut visualiser 2 courbes :
+	// * le nombre de NPC par COST
+	// * le nombre de victoires (total ? moyen ?) par COST
+
+	// L'idée c'est obtenir non pas le meilleur NPC du pool complet mais le meilleur NPC pour un COST donné
+	// Donc pour chaque COST donné, on vire (on remplace par des mutants), les NPC qui ont le moins de victoires dans ce COST donné
+
+	// l'autre solution est de faire des combats random pour faire une analyse de l'effet du coût sur le nombre de victoire, on obtient une courbe
+	// Ensuite on compte des points de victoire pondérés en fonction de cette courbe (foireux)
+
 }

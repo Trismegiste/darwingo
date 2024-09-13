@@ -4,7 +4,7 @@ type Fighter struct {
 	fighting   int
 	parryBonus int
 	wounds     int
-	winning    int
+	victory    int
 	shaken     bool
 }
 
@@ -31,5 +31,9 @@ func (npc *Fighter) getParry() int {
 }
 
 func (npc *Fighter) incVictory() {
-	npc.winning++
+	npc.victory++
+}
+
+func (npc *Fighter) getCost() int {
+	return 0
 }
