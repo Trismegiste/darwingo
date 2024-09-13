@@ -53,11 +53,11 @@ func main() {
 			// aftermath
 			if !fighter1.isDead() && fighter2.isDead() {
 				//		fmt.Println("Fighter1 has won")
-				fighter1.winning++
+				fighter1.incVictory()
 			}
 			if !fighter2.isDead() && fighter1.isDead() {
 				//	fmt.Println("Fighter2 has won")
-				fighter2.winning++
+				fighter2.incVictory()
 			}
 		}
 	}
@@ -67,7 +67,7 @@ func main() {
 		return b.winning - a.winning
 	})
 
-	for k := 0; k < 1000; k++ {
-		fmt.Print(pool[k], "  ")
+	for k := 0; k < 10; k++ {
+		fmt.Println(pool[k])
 	}
 }
