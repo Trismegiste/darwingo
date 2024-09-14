@@ -1,20 +1,27 @@
 package main
 
+import "fmt"
+
+const FIGHTING int8 = 0
+const PARRY_BONUS int8 = 1
+
 type Fighter struct {
-	fighting   int
-	parryBonus int
-	wounds     int
-	victory    int
-	shaken     bool
+	wounds  int
+	victory int
+	genome  [2]Gene
 }
 
-func (attacker *Fighter) attack(opponent *Fighter) {
-	if attacker.shaken {
-		return
-	}
+func (npc *Fighter) getAttack() int {
+	return explodingDice(npc.getFighting())
+}
 
-	if explodingDice(attacker.fighting) >= opponent.getParry() {
-		opponent.wounds++
+func (npc *Fighter) getFighting() int {
+	return npc.genome[FIGHTING].get()
+}
+
+func (target *Fighter) receiveAttack(attacker *Fighter) {
+	if attacker.getAttack() >= target.getParry() {
+		target.wounds++
 	}
 }
 
@@ -27,7 +34,7 @@ func (npc *Fighter) reset() {
 }
 
 func (npc *Fighter) getParry() int {
-	return npc.fighting/2 + 2 + npc.parryBonus
+	return npc.genome[FIGHTING].(*Trait).getPassiveDefense() + npc.genome[PARRY_BONUS].get()
 }
 
 func (npc *Fighter) incVictory() {
@@ -36,4 +43,16 @@ func (npc *Fighter) incVictory() {
 
 func (npc *Fighter) getCost() int {
 	return 0
+}
+
+func buildFighter(fighting int, parryBonus int) Fighter {
+	f := Fighter{}
+	f.genome[FIGHTING] = &Trait{dice: fighting}
+	f.genome[PARRY_BONUS] = &CappedBonus{parryBonus, 0, 2}
+
+	return f
+}
+
+func (npc Fighter) String() string {
+	return fmt.Sprint("Att:", npc.getFighting(), " ", "Dodge:", npc.genome[PARRY_BONUS].get())
 }

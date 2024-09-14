@@ -25,7 +25,7 @@ func main() {
 	var pool []Fighter
 
 	for k := 0; k < poolSize; k++ {
-		pool = append(pool, Fighter{fighting: 4 + 2*rand.Intn(5), parryBonus: rand.Intn(3)})
+		pool = append(pool, buildFighter(4+2*rand.Intn(5), rand.Intn(3)))
 	}
 
 	for f1 := 0; f1 < poolSize; f1++ {
@@ -41,8 +41,8 @@ func main() {
 			// fight
 			//	fmt.Println("Fighting", fighter1, "versus", fighter2)
 			for !fighter1.isDead() && !fighter2.isDead() && round < maxRound {
-				fighter1.attack(fighter2)
-				fighter2.attack(fighter1)
+				fighter1.receiveAttack(fighter2)
+				fighter2.receiveAttack(fighter1)
 				round++
 			}
 
