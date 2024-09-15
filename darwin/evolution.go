@@ -9,6 +9,7 @@ import (
 var pool []Fighter
 var poolSize int
 
+// initialises all fighters
 func Initialise(size int) {
 	poolSize = size
 	for k := 0; k < poolSize; k++ {
@@ -16,36 +17,39 @@ func Initialise(size int) {
 	}
 }
 
+// Rubs one step in the evolution
 func RunEpoch(maxRound int) {
 	for f1 := 0; f1 < poolSize; f1++ {
 		for f2 := 0; f2 < f1; f2++ {
-			// initialise fight
-			fighter1 := &pool[f1]
-			fighter2 := &pool[f2]
-			fighter1.reset()
-			fighter2.reset()
-			round := 0
-
-			// fight
-			for !fighter1.isDead() && !fighter2.isDead() && round < maxRound {
-				fighter1.receiveAttack(fighter2)
-				fighter2.receiveAttack(fighter1)
-				round++
-			}
-
-			// aftermath
-			if !fighter1.isDead() && fighter2.isDead() {
-				//		fmt.Println("Fighter1 has won")
-				fighter1.incVictory()
-			}
-			if !fighter2.isDead() && fighter1.isDead() {
-				//	fmt.Println("Fighter2 has won")
-				fighter2.incVictory()
-			}
+			runFight(&pool[f1], &pool[f2], maxRound)
 		}
 	}
 }
 
+// Runs one fight between two fighters
+func runFight(fighter1, fighter2 *Fighter, maxRound int) {
+	// initialise fight
+	fighter1.reset()
+	fighter2.reset()
+	round := 0
+
+	// fight
+	for !fighter1.isDead() && !fighter2.isDead() && round < maxRound {
+		fighter1.receiveAttack(fighter2)
+		fighter2.receiveAttack(fighter1)
+		round++
+	}
+
+	// aftermath
+	if !fighter1.isDead() && fighter2.isDead() {
+		fighter1.incVictory()
+	}
+	if !fighter2.isDead() && fighter1.isDead() {
+		fighter2.incVictory()
+	}
+}
+
+// Darwin selection
 func Selection() {
 	// stat on current epoch
 	slices.SortFunc(pool, func(a, b Fighter) int {
@@ -53,6 +57,7 @@ func Selection() {
 	})
 }
 
+// Prints some info
 func Log(howmany int) {
 	for k := 0; k < howmany; k++ {
 		fmt.Println(pool[k])

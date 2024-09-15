@@ -38,7 +38,4 @@ func main() {
 	// L'idée c'est obtenir non pas le meilleur NPC du pool complet mais le meilleur NPC pour un COST donné
 	// Donc pour chaque COST donné, on vire (on remplace par des mutants), les NPC qui ont le moins de victoires dans ce COST donné
 
-	// l'autre solution est de faire des combats random pour faire une analyse de l'effet du coût sur le nombre de victoire, on obtient une courbe
-	// Ensuite on compte des points de victoire pondérés en fonction de cette courbe (foireux)
-
 }
