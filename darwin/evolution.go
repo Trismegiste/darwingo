@@ -21,8 +21,12 @@ func Initialise(size int) {
 	}
 }
 
-// Rubs one step in the evolution
+// Runs one step in the evolution
 func RunEpoch(maxRound int) {
+	for idx := range poolSize {
+		pool[idx].resetEpoch()
+	}
+
 	for f1 := range poolSize {
 		for f2 := 0; f2 < f1; f2++ {
 			runFight(&pool[f1], &pool[f2], maxRound)
@@ -69,9 +73,14 @@ func Selection() {
 
 	// selection per cost
 	for cost, group := range perCost {
+		best := group[0]
+		weaker := group[len(group)-1]
 		fmt.Println("At cost:", cost, "we have", len(group), "fighters",
-			"and the best is", group[0],
-			"and the weaker is", group[len(group)-1])
+			"and the best is", best,
+			"and the weaker is", weaker)
+
+		weaker.clone(best)
+		weaker.mutate()
 	}
 }
 

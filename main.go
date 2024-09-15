@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"main/darwin"
 
@@ -18,13 +19,16 @@ func defunc_main() {
 }
 
 func main() {
-	poolSize := 1000
+	poolSize := 3000
 	maxRound := 10
 
 	darwin.Initialise(poolSize)
-	darwin.RunEpoch(maxRound)
-	darwin.Selection()
-	darwin.Log(10)
+	for k := range 10 {
+		fmt.Println("=========== Epoch", k, "===========")
+		darwin.RunEpoch(maxRound)
+		darwin.Selection()
+		darwin.Log(5)
+	}
 
 	// on compte les victoires indépendamment du coût
 	// Puis on regroupe les npc par COST pour déterminer qui a la plus de victoire pour un COST donné.

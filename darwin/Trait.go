@@ -11,6 +11,10 @@ func (gene Trait) get() int {
 	return gene.dice
 }
 
+func (gene *Trait) set(val int) {
+	gene.dice = val
+}
+
 func (gene *Trait) mutate() {
 	gene.dice += 4*rand.Intn(2) - 2
 

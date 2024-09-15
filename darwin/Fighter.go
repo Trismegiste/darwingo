@@ -94,6 +94,12 @@ func (npc *Fighter) mutate() {
 	pick.mutate()
 }
 
+func (npc *Fighter) clone(original *Fighter) {
+	for idx, gene := range npc.genome {
+		gene.set(original.genome[idx].get())
+	}
+}
+
 // Factory
 func BuildFighter(fighting int, blockEdge int, vig int, str int) Fighter {
 	f := Fighter{}

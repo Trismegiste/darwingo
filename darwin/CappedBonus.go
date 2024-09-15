@@ -13,6 +13,10 @@ func (gene CappedBonus) get() int {
 	return gene.value
 }
 
+func (gene *CappedBonus) set(val int) {
+	gene.value = val
+}
+
 func (gene *CappedBonus) mutate() {
 	gene.value += 2*rand.Intn(2) - 1
 
