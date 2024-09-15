@@ -21,3 +21,7 @@ func ExplodingDice(side int) int {
 func JokerRoll(side int) int {
 	return max(ExplodingDice(side), ExplodingDice(6))
 }
+
+func RandomTrait() int {
+	return 4 + 2*rand.Intn(5)
+}

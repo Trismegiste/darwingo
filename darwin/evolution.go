@@ -2,6 +2,7 @@ package darwin
 
 import (
 	"fmt"
+	"main/random"
 	"math/rand"
 	"slices"
 )
@@ -12,14 +13,17 @@ var poolSize int
 // initialises all fighters
 func Initialise(size int) {
 	poolSize = size
-	for k := 0; k < poolSize; k++ {
-		pool = append(pool, BuildFighter(4+2*rand.Intn(5), rand.Intn(3), 4+2*rand.Intn(5)))
+	for range poolSize {
+		pool = append(pool, BuildFighter(random.RandomTrait(),
+			rand.Intn(3),
+			random.RandomTrait(),
+			random.RandomTrait()))
 	}
 }
 
 // Rubs one step in the evolution
 func RunEpoch(maxRound int) {
-	for f1 := 0; f1 < poolSize; f1++ {
+	for f1 := range poolSize {
 		for f2 := 0; f2 < f1; f2++ {
 			runFight(&pool[f1], &pool[f2], maxRound)
 		}
@@ -29,8 +33,8 @@ func RunEpoch(maxRound int) {
 // Runs one fight between two fighters
 func runFight(fighter1, fighter2 *Fighter, maxRound int) {
 	// initialise fight
-	fighter1.reset()
-	fighter2.reset()
+	fighter1.resetFight()
+	fighter2.resetFight()
 	round := 0
 
 	// fight
@@ -55,6 +59,20 @@ func Selection() {
 	slices.SortFunc(pool, func(a, b Fighter) int {
 		return b.victory - a.victory
 	})
+
+	// group the pool per cost
+	perCost := make(map[int][]*Fighter)
+	for _, npc := range pool {
+		cost := npc.getCost()
+		perCost[cost] = append(perCost[cost], &npc)
+	}
+
+	// selection per cost
+	for cost, group := range perCost {
+		fmt.Println("At cost:", cost, "we have", len(group), "fighters",
+			"and the best is", group[0],
+			"and the weaker is", group[len(group)-1])
+	}
 }
 
 // Prints some info
