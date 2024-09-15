@@ -1,4 +1,4 @@
-package main
+package darwin
 
 type Gene interface {
 	get() int

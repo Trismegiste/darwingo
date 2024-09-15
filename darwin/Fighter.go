@@ -1,4 +1,4 @@
-package main
+package darwin
 
 import (
 	"fmt"
@@ -18,7 +18,7 @@ type Fighter struct {
 	genome  [3]Gene
 }
 
-func (npc *Fighter) getAttack() int {
+func (npc *Fighter) getAttackRoll() int {
 	return random.ExplodingDice(npc.getFighting())
 }
 
@@ -27,7 +27,7 @@ func (npc *Fighter) getFighting() int {
 }
 
 func (target *Fighter) receiveAttack(attacker *Fighter) {
-	if attacker.getAttack() >= target.getParry() {
+	if attacker.getAttackRoll() >= target.getParry() {
 		target.wounds++
 	}
 }
@@ -63,7 +63,7 @@ func (npc *Fighter) mutate() {
 }
 
 // Factory
-func buildFighter(fighting int, parryBonus int, vigor int) Fighter {
+func BuildFighter(fighting int, parryBonus int, vigor int) Fighter {
 	f := Fighter{}
 	f.genome[FIGHTING] = &Trait{fighting}
 	f.genome[BLOCK] = &CappedBonus{parryBonus, 0, 2}
