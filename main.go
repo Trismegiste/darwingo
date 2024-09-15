@@ -25,7 +25,7 @@ func main() {
 	var pool []Fighter
 
 	for k := 0; k < poolSize; k++ {
-		pool = append(pool, buildFighter(4+2*rand.Intn(5), rand.Intn(3)))
+		pool = append(pool, buildFighter(4+2*rand.Intn(5), rand.Intn(3), 4+2*rand.Intn(5)))
 	}
 
 	for f1 := 0; f1 < poolSize; f1++ {

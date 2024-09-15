@@ -1,10 +1,10 @@
-package main
+package random
 
 import (
 	"math/rand"
 )
 
-func explodingDice(side int) int {
+func ExplodingDice(side int) int {
 	oneDie := rand.Intn(side) + 1
 	roll := oneDie
 
@@ -14,4 +14,8 @@ func explodingDice(side int) int {
 	}
 
 	return roll
+}
+
+func JokerRoll(side int) int {
+	return max(ExplodingDice(side), ExplodingDice(6))
 }

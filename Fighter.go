@@ -1,18 +1,25 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"main/random"
+	"math/rand"
+)
 
+// Indices of gene in the genome of Fighter
 const FIGHTING int8 = 0
-const PARRY_BONUS int8 = 1
+const BLOCK int8 = 1
+const VIGOR int8 = 2
 
+// Fighter type
 type Fighter struct {
 	wounds  int
 	victory int
-	genome  [2]Gene
+	genome  [3]Gene
 }
 
 func (npc *Fighter) getAttack() int {
-	return explodingDice(npc.getFighting())
+	return random.ExplodingDice(npc.getFighting())
 }
 
 func (npc *Fighter) getFighting() int {
@@ -34,7 +41,7 @@ func (npc *Fighter) reset() {
 }
 
 func (npc *Fighter) getParry() int {
-	return npc.genome[FIGHTING].(*Trait).getPassiveDefense() + npc.genome[PARRY_BONUS].get()
+	return npc.genome[FIGHTING].(*Trait).getPassiveDefense() + npc.genome[BLOCK].get()
 }
 
 func (npc *Fighter) incVictory() {
@@ -42,17 +49,33 @@ func (npc *Fighter) incVictory() {
 }
 
 func (npc *Fighter) getCost() int {
-	return 0
+	sum := 0
+	for _, gene := range npc.genome {
+		sum += gene.getCost()
+	}
+
+	return sum
 }
 
-func buildFighter(fighting int, parryBonus int) Fighter {
+func (npc *Fighter) mutate() {
+	pick := npc.genome[rand.Intn(len(npc.genome))]
+	pick.mutate()
+}
+
+// Factory
+func buildFighter(fighting int, parryBonus int, vigor int) Fighter {
 	f := Fighter{}
-	f.genome[FIGHTING] = &Trait{dice: fighting}
-	f.genome[PARRY_BONUS] = &CappedBonus{parryBonus, 0, 2}
+	f.genome[FIGHTING] = &Trait{fighting}
+	f.genome[BLOCK] = &CappedBonus{parryBonus, 0, 2}
+	f.genome[VIGOR] = &Trait{vigor}
 
 	return f
 }
 
+// Print
 func (npc Fighter) String() string {
-	return fmt.Sprint("Att:", npc.getFighting(), " ", "Dodge:", npc.genome[PARRY_BONUS].get())
+	return fmt.Sprint("Att:", npc.getFighting(), " ",
+		"Vig:", npc.genome[VIGOR].get(), " ",
+		"Dodge:", npc.genome[BLOCK].get(), " ",
+		"Cost:", npc.getCost())
 }
