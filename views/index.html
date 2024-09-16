@@ -1,16 +1,53 @@
 {% extends "base.html" %}
+
 {% block body %}
-<main class="container">
-    <form action="/run" method="post">
-        <fieldset>
-            <label>Pool Size</label>
-            <input type="number" name="poolSize" />
-            <label>Epoch</label>
-            <input type="number" name="epoch" />
-            <label>Max Rounds</label>
-            <input type="number" name="maxRound" />
-            <input type="submit" />
-        </fieldset>
-    </form>
+<main class="container-fluid">
+    <div class="simulator" x-data="spa">
+        <div id="result"></div>
+        <form x-on:submit.prevent="run">
+            <fieldset>
+                <label>Pool Size</label>
+                <input type="number" x-model="poolSize" />
+                <label>Epoch</label>
+                <input type="number" x-model="epoch" />
+                <label>Max Rounds</label>
+                <input type="number" x-model="maxRound" />
+                <input type="submit" value="Run" />
+            </fieldset>
+        </form>
+    </div>
 </main>
+{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .simulator {
+        display: grid;
+        grid-template-columns: 3fr 1fr;
+        gap: 1em;
+    }
+</style>
+{% endblock %}
+
+{% block ecmascript %}
+<script type="module">
+    import Alpine from 'alpinejs'
+
+    Alpine.data('spa', () => ({
+        poolSize: 1000,
+        maxRound: 10,
+        epoch: 10,
+
+        run() {
+            if (typeof(EventSource) !== "undefined") {
+                var source = new EventSource("http://127.0.0.1:3000/sse")
+                source.onmessage = function(event) {
+                    document.getElementById("result").innerHTML += event.data + "<br>"
+                }
+            } else {
+                document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events..."
+            }
+        }
+    }))
+</script>
 {% endblock %}

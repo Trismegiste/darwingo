@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
     <link rel="stylesheet" href="/css/pico.red.min.css">
+    {% block stylesheets %}
+    {% endblock %}
+    <script type="importmap">
+        {
+            "imports": {
+                "alpinejs": "/esm/alpine.js"
+            }
+        }
+    </script>
+
     <title>{% block title %}Hello world!{% endblock %}</title>
 </head>
 
@@ -17,6 +27,10 @@
     {% endblock %}
     {% block ecmascript %}
     {% endblock %}
+    <script type="module">
+        import Alpine from 'alpinejs'
+        Alpine.start()
+    </script>
 </body>
 
 </html>

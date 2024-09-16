@@ -20,14 +20,10 @@ func main() {
 	})
 
 	app.Static("/css", "./public/css")
-	app.Static("/es", "./public/es")
+	app.Static("/esm", "./public/esm")
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.Render("index", fiber.Map{})
-	})
-
-	app.Post("/run", func(c *fiber.Ctx) error {
-		return c.Render("run", fiber.Map{})
 	})
 
 	app.Get("/sse", func(c *fiber.Ctx) error {
