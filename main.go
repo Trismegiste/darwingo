@@ -6,19 +6,29 @@ import (
 	"main/darwin"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/template/django/v3"
 )
 
-func defunc_main() {
-	app := fiber.New()
+func main() {
+	// Create a new engine
+	engine := django.New("./views", ".html")
+	app := fiber.New(fiber.Config{
+		Views: engine,
+	})
+
+	app.Static("/css", "./public/css")
+	app.Static("/es", "./public/es")
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello, World 👋!")
+		return c.Render("index", fiber.Map{
+			"Title": "Hello, World!",
+		})
 	})
 
 	log.Fatal(app.Listen(":3000"))
 }
 
-func main() {
+func cli_main() {
 	poolSize := 3000
 	maxRound := 10
 
