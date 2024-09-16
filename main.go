@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"main/darwin"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/django/v3"
@@ -32,14 +31,21 @@ func main() {
 		c.Set("Connection", "keep-alive")
 		c.Set("Transfer-Encoding", "chunked")
 
+		poolSize := c.QueryInt("poolSize")
+		maxRound := c.QueryInt("maxRound")
+		maxEpoch := c.QueryInt("epoch")
+
 		c.Status(fiber.StatusOK).Context().SetBodyStreamWriter(fasthttp.StreamWriter(func(w *bufio.Writer) {
-			fmt.Println("WRITER")
-			var i int
-			for {
-				i++
-				msg := fmt.Sprintf("%d - the time is %v", i, time.Now())
-				fmt.Fprintf(w, "data: Message: %s\n\n", msg)
-				fmt.Println(msg)
+			fmt.Println("Start simulation")
+			darwin.Initialise(poolSize)
+
+			for k := range maxEpoch {
+				fmt.Println("=========== Epoch", k, "===========")
+				fmt.Fprintf(w, "data: Epoch %d\n\n", k)
+
+				darwin.RunEpoch(maxRound)
+				darwin.Selection()
+				darwin.Log(5)
 
 				err := w.Flush()
 				if err != nil {
@@ -50,8 +56,9 @@ func main() {
 
 					break
 				}
-				time.Sleep(2 * time.Second)
 			}
+
+			fmt.Fprintf(w, "data: Done\n\n")
 		}))
 
 		return nil

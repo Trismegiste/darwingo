@@ -57,8 +57,11 @@
             }
             // open a new one
             this.socket = new EventSource(url)
-            this.socket.onmessage = function(event) {
+            this.socket.onmessage = (event) => {
                 document.getElementById("result").innerHTML += event.data + "<br>"
+                if (event.data=='Done'){
+                    this.socket.close()
+                }
             }
         }
     }))
