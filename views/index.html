@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 
+{% block title %}Darwin Go{% endblock %}
+
 {% block body %}
 <main class="container-fluid">
-    <div class="simulator" x-data="spa">
+    <div class="simulator" x-data="spa('http://127.0.0.1:3000/sse')">
         <div id="result"></div>
         <form x-on:submit.prevent="run">
             <fieldset>
@@ -33,19 +35,30 @@
 <script type="module">
     import Alpine from 'alpinejs'
 
-    Alpine.data('spa', () => ({
+    Alpine.data('spa', (host) => ({
         poolSize: 1000,
         maxRound: 10,
         epoch: 10,
+        socket: null,
 
         run() {
-            if (typeof(EventSource) !== "undefined") {
-                var source = new EventSource("http://127.0.0.1:3000/sse")
-                source.onmessage = function(event) {
-                    document.getElementById("result").innerHTML += event.data + "<br>"
-                }
-            } else {
-                document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events..."
+            if (typeof(EventSource) === "undefined") {
+                throw new Error("Sorry, your browser does not support server-sent events...")
+            }
+
+            let url = new URL(host)
+            url.searchParams.append('poolSize', this.poolSize)
+            url.searchParams.append('maxRound', this.maxRound)
+            url.searchParams.append('epoch', this.epoch)
+
+            // close previous socket, because this stop the server from running
+            if (this.socket !== null) {
+                this.socket.close()
+            }
+            // open a new one
+            this.socket = new EventSource(url)
+            this.socket.onmessage = function(event) {
+                document.getElementById("result").innerHTML += event.data + "<br>"
             }
         }
     }))
