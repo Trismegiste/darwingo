@@ -48,7 +48,7 @@ func main() {
 				world.Log(5)
 				populationPerCost, _ := world.GetStatPerCost()
 				content, _ := json.Marshal(populationPerCost)
-				fmt.Fprintf(w, "data: Epoch %d : %s\n\n", k, content)
+				fmt.Fprintf(w, "data: %s\n\n", content)
 
 				err := w.Flush()
 				if err != nil {

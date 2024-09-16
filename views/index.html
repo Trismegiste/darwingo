@@ -5,7 +5,13 @@
 {% block body %}
 <main class="container-fluid">
     <div class="simulator" x-data="spa('http://127.0.0.1:3000/sse')">
-        <div id="result"></div>
+        <div id="result">
+           <ul>
+                <template x-for="(pop, cost) in populationGraph">
+                    <li x-text="cost"></li>
+                </template>
+            </ul>
+        </div>
         <form x-on:submit.prevent="run">
             <fieldset>
                 <label>Pool Size</label>
@@ -28,6 +34,9 @@
         grid-template-columns: 3fr 1fr;
         gap: 1em;
     }
+    svg {
+        width: 100%;
+    }
 </style>
 {% endblock %}
 
@@ -40,6 +49,7 @@
         maxRound: 10,
         epoch: 10,
         socket: null,
+        populationGraph: {},
 
         run() {
             if (typeof(EventSource) === "undefined") {
@@ -58,11 +68,39 @@
             // open a new one
             this.socket = new EventSource(url)
             this.socket.onmessage = (event) => {
-                document.getElementById("result").innerHTML += event.data + "<br>"
-                if (event.data=='Done'){
+                if (event.data=='Done') {
                     this.socket.close()
+                } else {
+                    this.populationGraph = JSON.parse(event.data)
+                    console.log(this.populationGraph)
                 }
             }
+        },
+
+        getBoundingBox() {
+            let minX = Infinity
+            let minY = Infinity
+            let maxX = -Infinity
+            let maxY = -Infinity
+            for(let [cost,pop] of Object.entries(this.populationGraph)) {
+                cost = parseInt(cost, 10)
+                if (pop > maxY) {
+                    maxY = pop
+                }
+                if (cost > maxX) {
+                    maxX = cost
+                }
+                if (pop < minY) {
+                    minY = pop
+                }
+                if (cost < minX) {
+                    minX = cost
+                }
+            }
+            const width = maxX - minX
+            const height = maxY - minY
+
+            return `${minX} ${minY} ${width} ${height}`
         }
     }))
 </script>
