@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block body %}
-<main class="container-fluid">
-  <h1>YOLO</h1>
+<main class="container">
+    <form action="/run" method="post">
+        <fieldset>
+            <label>Pool Size</label>
+            <input type="number" name="poolSize" />
+            <label>Epoch</label>
+            <input type="number" name="epoch" />
+            <label>Max Rounds</label>
+            <input type="number" name="maxRound" />
+            <input type="submit" />
+        </fieldset>
+    </form>
 </main>
 {% endblock %}

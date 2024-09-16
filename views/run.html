@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block body %}
+<main class="container-fluid">
+    <div id="result"></div>
+</main>
+{% endblock %}
+
+{% block ecmascript %}
+<script>
+    if (typeof(EventSource) !== "undefined") {
+        var source = new EventSource("http://127.0.0.1:3000/sse");
+        source.onmessage = function(event) {
+            document.getElementById("result").innerHTML += event.data + "<br>";
+        };
+    } else {
+        document.getElementById("result").innerHTML = "Sorry, your browser does not support server-sent events...";
+    }
+</script>
+{% endblock %}
