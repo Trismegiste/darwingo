@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"log"
 	"main/darwin"
@@ -40,12 +41,14 @@ func main() {
 			world := darwin.BuildWorld(poolSize)
 
 			for k := range maxEpoch {
-				fmt.Println("=========== Epoch", k, "===========")
-				fmt.Fprintf(w, "data: Epoch %d\n\n", k)
+				fmt.Println("===========", "Epoch", k, "===========")
 
 				world.RunEpoch(maxRound)
 				world.Selection()
 				world.Log(5)
+				populationPerCost, _ := world.GetStatPerCost()
+				content, _ := json.Marshal(populationPerCost)
+				fmt.Fprintf(w, "data: Epoch %d : %s\n\n", k, content)
 
 				err := w.Flush()
 				if err != nil {

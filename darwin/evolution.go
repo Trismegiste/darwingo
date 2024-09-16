@@ -8,7 +8,8 @@ import (
 )
 
 type World struct {
-	pool []*Fighter
+	pool    []*Fighter
+	perCost map[int][]*Fighter
 }
 
 // initialises all fighters
@@ -26,14 +27,28 @@ func BuildWorld(size int) *World {
 
 // Runs one step in the evolution
 func (w *World) RunEpoch(maxRound int) {
+	// Reset
 	for _, f := range w.pool {
 		f.resetEpoch()
 	}
 
+	// Battle
 	for f1 := range len(w.pool) {
 		for f2 := 0; f2 < f1; f2++ {
 			runFight(w.pool[f1], w.pool[f2], maxRound)
 		}
+	}
+
+	// Stat on current epoch
+	slices.SortFunc(w.pool, func(a, b *Fighter) int {
+		return b.victory - a.victory
+	})
+
+	// Groups the pool by cost of fighter
+	w.perCost = make(map[int][]*Fighter)
+	for _, npc := range w.pool {
+		cost := npc.getCost()
+		w.perCost[cost] = append(w.perCost[cost], npc)
 	}
 }
 
@@ -62,20 +77,8 @@ func runFight(fighter1, fighter2 *Fighter, maxRound int) {
 
 // Darwin selection
 func (w *World) Selection() {
-	// stat on current epoch
-	slices.SortFunc(w.pool, func(a, b *Fighter) int {
-		return b.victory - a.victory
-	})
-
-	// group the pool per cost
-	perCost := make(map[int][]*Fighter)
-	for _, npc := range w.pool {
-		cost := npc.getCost()
-		perCost[cost] = append(perCost[cost], npc)
-	}
-
 	// selection per cost
-	for cost, group := range perCost {
+	for cost, group := range w.perCost {
 		best := group[0]
 		weaker := group[len(group)-1]
 		fmt.Println("At cost:", cost, "we have", len(group), "fighters",
@@ -92,4 +95,21 @@ func (w *World) Log(howmany int) {
 	for k := 0; k < howmany; k++ {
 		fmt.Println(w.pool[k])
 	}
+}
+
+func (w *World) GetStatPerCost() (map[int]int, map[int]float32) {
+	// the stats we'll return
+	counting := make(map[int]int)
+	victory := make(map[int]float32)
+
+	for cost, group := range w.perCost {
+		counting[cost] = len(group)
+		sum := 0
+		for _, fighter := range group {
+			sum += fighter.victory
+		}
+		victory[cost] = float32(sum) / float32(len(group))
+	}
+
+	return counting, victory
 }
