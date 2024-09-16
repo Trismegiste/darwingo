@@ -7,29 +7,32 @@ import (
 	"slices"
 )
 
-var pool []Fighter
-var poolSize int
+type World struct {
+	pool []*Fighter
+}
 
 // initialises all fighters
-func Initialise(size int) {
-	poolSize = size
-	for range poolSize {
-		pool = append(pool, BuildFighter(random.RandomTrait(),
+func BuildWorld(size int) *World {
+	w := new(World)
+	for range size {
+		w.pool = append(w.pool, BuildFighter(random.RandomTrait(),
 			rand.Intn(3),
 			random.RandomTrait(),
 			random.RandomTrait()))
 	}
+
+	return w
 }
 
 // Runs one step in the evolution
-func RunEpoch(maxRound int) {
-	for idx := range poolSize {
-		pool[idx].resetEpoch()
+func (w *World) RunEpoch(maxRound int) {
+	for _, f := range w.pool {
+		f.resetEpoch()
 	}
 
-	for f1 := range poolSize {
+	for f1 := range len(w.pool) {
 		for f2 := 0; f2 < f1; f2++ {
-			runFight(&pool[f1], &pool[f2], maxRound)
+			runFight(w.pool[f1], w.pool[f2], maxRound)
 		}
 	}
 }
@@ -58,17 +61,17 @@ func runFight(fighter1, fighter2 *Fighter, maxRound int) {
 }
 
 // Darwin selection
-func Selection() {
+func (w *World) Selection() {
 	// stat on current epoch
-	slices.SortFunc(pool, func(a, b Fighter) int {
+	slices.SortFunc(w.pool, func(a, b *Fighter) int {
 		return b.victory - a.victory
 	})
 
 	// group the pool per cost
 	perCost := make(map[int][]*Fighter)
-	for _, npc := range pool {
+	for _, npc := range w.pool {
 		cost := npc.getCost()
-		perCost[cost] = append(perCost[cost], &npc)
+		perCost[cost] = append(perCost[cost], npc)
 	}
 
 	// selection per cost
@@ -85,8 +88,8 @@ func Selection() {
 }
 
 // Prints some info
-func Log(howmany int) {
+func (w *World) Log(howmany int) {
 	for k := 0; k < howmany; k++ {
-		fmt.Println(pool[k])
+		fmt.Println(w.pool[k])
 	}
 }

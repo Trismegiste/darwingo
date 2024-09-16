@@ -101,14 +101,14 @@ func (npc *Fighter) clone(original *Fighter) {
 }
 
 // Factory
-func BuildFighter(fighting int, blockEdge int, vig int, str int) Fighter {
+func BuildFighter(fighting int, blockEdge int, vig int, str int) *Fighter {
 	f := Fighter{}
 	f.genome[FIGHTING] = &Trait{fighting}
 	f.genome[BLOCK] = &CappedBonus{blockEdge, 0, 2}
 	f.genome[VIGOR] = &Trait{vig}
 	f.genome[STRENGTH] = &Trait{str}
 
-	return f
+	return &f
 }
 
 // Print
