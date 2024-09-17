@@ -2,7 +2,7 @@ package darwin
 
 import "testing"
 
-func Test_Cost(t *testing.T) {
+func Test_SkillCost(t *testing.T) {
 	gene := new(Skill)
 
 	gene.set(8)
@@ -20,7 +20,24 @@ func (sk Skill) getTotalCost(attr int) int {
 	return sk.getCost() + sk.getAdditionalCost(attr)
 }
 
-func Test_AdditionalCost(t *testing.T) {
+func Test_AdditionalCost_D4(t *testing.T) {
+	gene := Skill{4}
+
+	if gene.getCost() != 0 {
+		t.Fatal("d4 Skill costs 0")
+	}
+
+	if gene.getAdditionalCost(4) != 0 {
+		t.Fatal("No additional cost for a d4 Skill to d4 when Attribute is equal to d4")
+	}
+
+	if gene.getAdditionalCost(12) != 0 {
+		t.Fatal("No additional cost for a d4 Skill to d4 when Attribute is equal to d12")
+	}
+
+}
+
+func Test_AdditionalCost_D12(t *testing.T) {
 	gene := new(Skill)
 	gene.set(12)
 

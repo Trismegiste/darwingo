@@ -82,3 +82,27 @@ func TestDamageRollWithStrength_D12(t *testing.T) {
 		t.Fatal("Average of damage roll is not consistent with d8R+d12R around 5.1+7.1", "(", avg, ")")
 	}
 }
+
+func Test_ZeroFighterCost(t *testing.T) {
+	var f *Fighter = BuildFighter(4, 0, 4, 4, 4)
+
+	if f.getCost() != 0 {
+		t.Fatal("Cost should be equal to 0")
+	}
+}
+
+func Test_MiddleFighterCost(t *testing.T) {
+	var f *Fighter = BuildFighter(12, 1, 6, 6, 6)
+
+	if f.getCost() != (1+6)+2+2+2+2 {
+		t.Fatal("Cost should be equal to 15", f.getCost())
+	}
+}
+
+func Test_HighFighterCost(t *testing.T) {
+	var f *Fighter = BuildFighter(12, 1, 10, 8, 10)
+
+	if f.getCost() != (3+2)+2+6+4+6 {
+		t.Fatal("Cost should be equal to 23")
+	}
+}
