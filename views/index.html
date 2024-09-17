@@ -6,8 +6,15 @@
 <main class="container-fluid">
     <div class="simulator" x-data="spa('http://127.0.0.1:3000/sse')">
         <div id="result">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 150" width="200" height="100">
+                <g fill="none">
+                    <template x-for="(pop, cost) in popByCost">
+                        <line x-bind:x1="cost" x-bind:x2="cost" y1="0" x-bind:y2="pop" stroke="red" stroke-width="1%"></line>
+                    </template>
+                </g>
+            </svg>
             <ul>
-                <template x-for="(pop, cost) in populationGraph">
+                <template x-for="(pop, cost) in popByCost">
                     <li x-text="pop"></li>
                 </template>
             </ul>
@@ -45,6 +52,7 @@
 <script type="module">
     import Alpine from 'alpinejs'
     import simulation from 'spa'
+    import 'svgfix'
 
     Alpine.data('spa', simulation)
 </script>

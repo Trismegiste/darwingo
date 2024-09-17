@@ -3,7 +3,7 @@ export default (host) => ({
     maxRound: 10,
     epoch: 10,
     socket: null,
-    populationGraph: {},
+    popByCost: {},
 
     run() {
         if (typeof(EventSource) === "undefined") {
@@ -25,8 +25,8 @@ export default (host) => ({
             if (event.data == 'Done') {
                 this.socket.close()
             } else {
-                this.populationGraph = JSON.parse(event.data)
-                console.log(this.populationGraph)
+                this.popByCost = JSON.parse(event.data)
+                console.log(this.popByCost)
             }
         }
     },
@@ -36,7 +36,7 @@ export default (host) => ({
         let minY = Infinity
         let maxX = -Infinity
         let maxY = -Infinity
-        for (let [cost, pop] of Object.entries(this.populationGraph)) {
+        for (let [cost, pop] of Object.entries(this.popByCost)) {
             cost = parseInt(cost, 10)
             if (pop > maxY) {
                 maxY = pop
