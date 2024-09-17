@@ -7,11 +7,13 @@ import (
 )
 
 // Indices of gene in the genome of Fighter
-const FIGHTING int8 = 0
-const BLOCK int8 = 1
-const VIGOR int8 = 2
-const STRENGTH int8 = 3
-const AGILITY int8 = 4
+const (
+	FIGHTING int8 = iota
+	BLOCK
+	VIGOR
+	STRENGTH
+	AGILITY
+)
 
 const DEFAULT_DAMAGE_DICE = 8
 
