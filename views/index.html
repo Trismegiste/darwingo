@@ -6,10 +6,10 @@
 <main class="container-fluid">
     <div class="simulator" x-data="spa('http://127.0.0.1:3000/sse')">
         <div id="result">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 200" width="300" height="200">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 200" preserveAspectRatio="none">
                 <g fill="none">
                     <template x-for="(pop, cost) in popByCost" :key="cost">
-                        <line x-bind:x1="10*cost" x-bind:x2="10*cost" y1="0" x-bind:y2="pop" stroke="red" stroke-width="1%"></line>
+                        <line x-bind:x1="cost" x-bind:x2="cost" y1="200" x-bind:y2="200-pop" stroke="red" stroke-width="1px"></line>
                     </template>
                 </g>
             </svg>
@@ -39,6 +39,7 @@
 
     svg {
         width: 100%;
+        height: 300px;
     }
 </style>
 {% endblock %}
