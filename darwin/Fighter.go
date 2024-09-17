@@ -11,6 +11,7 @@ const FIGHTING int8 = 0
 const BLOCK int8 = 1
 const VIGOR int8 = 2
 const STRENGTH int8 = 3
+const AGILITY int8 = 4
 
 const DEFAULT_DAMAGE_DICE = 8
 
@@ -18,7 +19,7 @@ const DEFAULT_DAMAGE_DICE = 8
 type Fighter struct {
 	wounds  int
 	victory int
-	genome  [4]Gene
+	genome  [5]Gene
 }
 
 func (npc *Fighter) getAttackRoll() int {
@@ -69,11 +70,11 @@ func (npc *Fighter) resetEpoch() {
 }
 
 func (npc *Fighter) getParry() int {
-	return npc.genome[FIGHTING].(*Trait).getPassiveDefense() + npc.genome[BLOCK].get()
+	return npc.genome[FIGHTING].(*Skill).getPassiveDefense() + npc.genome[BLOCK].get()
 }
 
 func (npc *Fighter) getToughness() int {
-	return npc.genome[VIGOR].(*Trait).getPassiveDefense()
+	return npc.genome[VIGOR].(*Attribute).getPassiveDefense()
 }
 
 func (npc *Fighter) incVictory() {
@@ -85,6 +86,7 @@ func (npc *Fighter) getCost() int {
 	for _, gene := range npc.genome {
 		sum += gene.getCost()
 	}
+	sum += npc.genome[FIGHTING].(*Skill).getAdditionalCost(npc.genome[AGILITY].get())
 
 	return sum
 }
@@ -101,12 +103,13 @@ func (npc *Fighter) mimic(original *Fighter) {
 }
 
 // Factory
-func BuildFighter(fighting int, blockEdge int, vig int, str int) *Fighter {
+func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int) *Fighter {
 	f := Fighter{}
-	f.genome[FIGHTING] = &Trait{fighting}
+	f.genome[FIGHTING] = &Skill{fighting}
 	f.genome[BLOCK] = &CappedBonus{blockEdge, 0, 2}
-	f.genome[VIGOR] = &Trait{vig}
-	f.genome[STRENGTH] = &Trait{str}
+	f.genome[VIGOR] = &Attribute{vig}
+	f.genome[STRENGTH] = &Attribute{str}
+	f.genome[AGILITY] = &Attribute{agi}
 
 	return &f
 }
@@ -116,6 +119,7 @@ func (npc Fighter) String() string {
 	return fmt.Sprint("Att:", npc.getFighting(), " ",
 		"VIG:", npc.genome[VIGOR].get(), " ",
 		"STR:", npc.genome[STRENGTH].get(), " ",
+		"AGI:", npc.genome[AGILITY].get(), " ",
 		"Block:", npc.genome[BLOCK].get(), " ",
 		"Cost:", npc.getCost(), " ",
 		"Win:", npc.victory)

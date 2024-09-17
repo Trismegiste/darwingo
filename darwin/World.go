@@ -19,6 +19,7 @@ func BuildWorld(size int) *World {
 		w.pool = append(w.pool, BuildFighter(random.RandomTrait(),
 			rand.Intn(3),
 			random.RandomTrait(),
+			random.RandomTrait(),
 			random.RandomTrait()))
 	}
 
