@@ -85,7 +85,7 @@ func (w *World) Selection() {
 			"and the best is", best,
 			"and the weaker is", weaker)
 
-		weaker.clone(best)
+		weaker.mimic(best)
 		weaker.mutate()
 	}
 }

@@ -94,7 +94,7 @@ func (npc *Fighter) mutate() {
 	pick.mutate()
 }
 
-func (npc *Fighter) clone(original *Fighter) {
+func (npc *Fighter) mimic(original *Fighter) {
 	for idx, gene := range npc.genome {
 		gene.set(original.genome[idx].get())
 	}
