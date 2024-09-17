@@ -98,19 +98,27 @@ func (w *World) Log(howmany int) {
 	}
 }
 
-func (w *World) GetStatPerCost() (map[int]int, map[int]float32) {
+type StatCost struct {
+	GroupCount  int
+	AvgVictory  float32
+	BestFighter *Fighter
+}
+
+func (w *World) GetStatPerCost() map[int]*StatCost {
 	// the stats we'll return
-	counting := make(map[int]int)
-	victory := make(map[int]float32)
+	stat := make(map[int]*StatCost)
 
 	for cost, group := range w.perCost {
-		counting[cost] = len(group)
+		info := new(StatCost)
+		info.BestFighter = group[0]
+		info.GroupCount = len(group)
 		sum := 0
 		for _, fighter := range group {
 			sum += fighter.victory
 		}
-		victory[cost] = float32(sum) / float32(len(group))
+		info.AvgVictory = float32(sum) / float32(len(group))
+		stat[cost] = info
 	}
 
-	return counting, victory
+	return stat
 }

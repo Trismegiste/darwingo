@@ -3,7 +3,8 @@ export default (host) => ({
     maxRound: 10,
     epoch: 10,
     socket: null,
-    popByCost: {},
+    statByCost: {},
+    maxes: {},
 
     run() {
         if (typeof(EventSource) === "undefined") {
@@ -25,35 +26,31 @@ export default (host) => ({
             if (event.data == 'Done') {
                 this.socket.close()
             } else {
-                this.popByCost = JSON.parse(event.data)
-                console.log(this.popByCost)
+                this.statByCost = JSON.parse(event.data)
+                this.maxes = this.getBoundingBox()
+                console.log(this.statByCost)
             }
         }
     },
 
     getBoundingBox() {
-        let minX = Infinity
-        let minY = Infinity
-        let maxX = -Infinity
-        let maxY = -Infinity
-        for (let [cost, pop] of Object.entries(this.popByCost)) {
-            cost = parseInt(cost, 10)
-            if (pop > maxY) {
-                maxY = pop
-            }
-            if (cost > maxX) {
-                maxX = cost
-            }
-            if (pop < minY) {
-                minY = pop
-            }
-            if (cost < minX) {
-                minX = cost
-            }
-        }
-        const width = maxX - minX
-        const height = maxY - minY
+        let maxCost = -Infinity
+        let maxCount = -Infinity
+        let maxVictory = -Infinity
 
-        return `${minX} ${minY} ${width} ${height}`
+        for (let [cost, info] of Object.entries(this.statByCost)) {
+            cost = parseInt(cost, 10)
+            if (info.GroupCount > maxCount) {
+                maxCount = info.GroupCount
+            }
+            if (info.AvgVictory > maxVictory) {
+                maxVictory = info.AvgVictory
+            }
+            if (cost > maxCost) {
+                maxCost = cost
+            }          
+        }
+      
+        return {cost:maxCost, count:maxCount, victory:maxVictory}
     }
 })

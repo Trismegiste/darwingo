@@ -46,8 +46,8 @@ func main() {
 				world.RunEpoch(maxRound)
 				world.Selection()
 				world.Log(5)
-				populationPerCost, _ := world.GetStatPerCost()
-				content, _ := json.Marshal(populationPerCost)
+				stats := world.GetStatPerCost()
+				content, _ := json.Marshal(stats)
 				fmt.Fprintf(w, "data: %s\n\n", content)
 
 				err := w.Flush()
