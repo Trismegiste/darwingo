@@ -1,6 +1,9 @@
 package darwin
 
-import "testing"
+import (
+	"math"
+	"testing"
+)
 
 func Test_SkillCost(t *testing.T) {
 	gene := new(Skill)
@@ -63,5 +66,29 @@ func Test_AdditionalCost_D12(t *testing.T) {
 
 	if gene.getAdditionalCost(4) != 4 {
 		t.Fatal("4 additional slots for a d12 Skill to d4 when Attribute is equal to d4")
+	}
+}
+
+func Test_SkillMutation(t *testing.T) {
+	var countUp, countDown int = 0, 0
+	for range 20000 {
+		sk := Skill{8}
+		sk.mutate()
+		if sk.get() > 8 {
+			countUp++
+		}
+
+		if sk.get() < 8 {
+			countDown++
+		}
+
+		if sk.get() == 8 {
+			t.Fatal("Skill should always mutate")
+		}
+	}
+
+	sigma := math.Abs(float64(countDown-countUp) / 200.0)
+	if sigma > 5 {
+		t.Fatal("Mutation direction is biased above 5%", sigma)
 	}
 }
