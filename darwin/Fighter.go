@@ -22,7 +22,7 @@ type Fighter struct {
 }
 
 func (npc *Fighter) getAttackRoll() int {
-	return random.ExplodingDice(npc.getFighting())
+	return random.JokerRoll(npc.getFighting())
 }
 
 func (npc *Fighter) getFighting() int {
