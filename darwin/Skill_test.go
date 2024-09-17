@@ -69,7 +69,7 @@ func Test_AdditionalCost_D12(t *testing.T) {
 	}
 }
 
-func Test_SkillMutation(t *testing.T) {
+func Test_SkillMutationStat(t *testing.T) {
 	var countUp, countDown int = 0, 0
 	for range 20000 {
 		sk := Skill{8}
@@ -90,5 +90,25 @@ func Test_SkillMutation(t *testing.T) {
 	sigma := math.Abs(float64(countDown-countUp) / 200.0)
 	if sigma > 5 {
 		t.Fatal("Mutation direction is biased above 5%", sigma)
+	}
+}
+
+func Test_SkillEvolutionTo_D4(t *testing.T) {
+	sk := Skill{8}
+	for {
+		sk.mutate()
+		if sk.get() == 4 {
+			break
+		}
+	}
+}
+
+func Test_SkillEvolutionTo_D12(t *testing.T) {
+	sk := Skill{8}
+	for {
+		sk.mutate()
+		if sk.get() == 12 {
+			break
+		}
 	}
 }

@@ -41,7 +41,7 @@ func Test_AttributeDefense(t *testing.T) {
 	}
 }
 
-func Test_AttributeMutation(t *testing.T) {
+func Test_AttributeMutationStat(t *testing.T) {
 	var countUp, countDown int = 0, 0
 	for range 20000 {
 		attr := Attribute{8}
@@ -62,5 +62,25 @@ func Test_AttributeMutation(t *testing.T) {
 	sigma := math.Abs(float64(countDown-countUp) / 200.0)
 	if sigma > 5 {
 		t.Fatal("Mutation direction is biased above 5%", sigma)
+	}
+}
+
+func Test_AttributeEvolutionTo_D4(t *testing.T) {
+	attr := Attribute{8}
+	for {
+		attr.mutate()
+		if attr.get() == 4 {
+			break
+		}
+	}
+}
+
+func Test_AttributeEvolutionTo_D12(t *testing.T) {
+	attr := Attribute{8}
+	for {
+		attr.mutate()
+		if attr.get() == 12 {
+			break
+		}
 	}
 }

@@ -8,7 +8,7 @@
         <div id="result">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 150" width="200" height="100">
                 <g fill="none">
-                    <template x-for="(pop, cost) in popByCost">
+                    <template x-for="(pop, cost) in popByCost" :key="cost">
                         <line x-bind:x1="cost" x-bind:x2="cost" y1="0" x-bind:y2="pop" stroke="red" stroke-width="1%"></line>
                     </template>
                 </g>
