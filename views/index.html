@@ -6,9 +6,9 @@
 <main class="container-fluid">
     <div class="simulator" x-data="spa('http://127.0.0.1:3000/sse')">
         <div id="result">
-           <ul>
+            <ul>
                 <template x-for="(pop, cost) in populationGraph">
-                    <li x-text="cost"></li>
+                    <li x-text="pop"></li>
                 </template>
             </ul>
         </div>
@@ -34,6 +34,7 @@
         grid-template-columns: 3fr 1fr;
         gap: 1em;
     }
+
     svg {
         width: 100%;
     }
@@ -43,65 +44,8 @@
 {% block ecmascript %}
 <script type="module">
     import Alpine from 'alpinejs'
+    import simulation from 'spa'
 
-    Alpine.data('spa', (host) => ({
-        poolSize: 1000,
-        maxRound: 10,
-        epoch: 10,
-        socket: null,
-        populationGraph: {},
-
-        run() {
-            if (typeof(EventSource) === "undefined") {
-                throw new Error("Sorry, your browser does not support server-sent events...")
-            }
-
-            let url = new URL(host)
-            url.searchParams.append('poolSize', this.poolSize)
-            url.searchParams.append('maxRound', this.maxRound)
-            url.searchParams.append('epoch', this.epoch)
-
-            // close previous socket, because this stop the server from running
-            if (this.socket !== null) {
-                this.socket.close()
-            }
-            // open a new one
-            this.socket = new EventSource(url)
-            this.socket.onmessage = (event) => {
-                if (event.data=='Done') {
-                    this.socket.close()
-                } else {
-                    this.populationGraph = JSON.parse(event.data)
-                    console.log(this.populationGraph)
-                }
-            }
-        },
-
-        getBoundingBox() {
-            let minX = Infinity
-            let minY = Infinity
-            let maxX = -Infinity
-            let maxY = -Infinity
-            for(let [cost,pop] of Object.entries(this.populationGraph)) {
-                cost = parseInt(cost, 10)
-                if (pop > maxY) {
-                    maxY = pop
-                }
-                if (cost > maxX) {
-                    maxX = cost
-                }
-                if (pop < minY) {
-                    minY = pop
-                }
-                if (cost < minX) {
-                    minX = cost
-                }
-            }
-            const width = maxX - minX
-            const height = maxY - minY
-
-            return `${minX} ${minY} ${width} ${height}`
-        }
-    }))
+    Alpine.data('spa', simulation)
 </script>
 {% endblock %}
