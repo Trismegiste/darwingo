@@ -7,16 +7,17 @@
     <div class="simulator" x-data="spa('http://127.0.0.1:3000/sse')">
         <div id="result">
             <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400">
-                <g fill="none">
+                <g>
+                    <text x="50" y="50" x-text="epoch"></text>
                     <template x-for="(info, cost) in statByCost" :key="cost">
-                        <line x-bind:x1="cost*1200/maxes.cost" x-bind:x2="cost*1200/maxes.cost" x-bind:y1="400" x-bind:y2="400*(1-info.GroupCount/maxes.count)" style="stroke: blue; stroke-width:2px"></line>
+                        <line x-bind:x1="cost*1200/maxes.cost" x-bind:x2="cost*1200/maxes.cost" y1="400" x-bind:y2="400*(1-info.GroupCount/maxes.count)" style="stroke: blue; stroke-width:10px"></line>
                     </template>
                 </g>
             </svg>
             <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="400" viewBox="0 0 1200 400">
-                <g fill="none">
+                <g>
                     <template x-for="(info, cost) in statByCost" :key="cost">
-                        <line x-bind:x1="cost*1200/maxes.cost" x-bind:x2="cost*1200/maxes.cost" x-bind:y1="400" x-bind:y2="400*(1-info.AvgVictory/maxes.victory)" style="stroke: green; stroke-width:2px"></line>
+                        <line x-bind:x1="cost*1200/maxes.cost" x-bind:x2="cost*1200/maxes.cost" y1="400" x-bind:y2="400*(1-info.AvgVictory/maxes.victory)" style="stroke: green; stroke-width:10px"></line>
                     </template>
                 </g>
             </svg>

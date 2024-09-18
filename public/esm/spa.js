@@ -36,6 +36,7 @@ export default (host) => ({
                     count: state.MaxCount,
                     victory: state.MaxAvgVictory
                 }
+                this.epoch = state.Epoch
             }
         }
     }
