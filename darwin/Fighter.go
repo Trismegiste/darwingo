@@ -2,6 +2,7 @@ package darwin
 
 import (
 	"fmt"
+	"log"
 	"main/random"
 	"math/rand"
 )
@@ -38,7 +39,7 @@ type Fighter struct {
 
 func (npc *Fighter) getAttackRoll() int {
 	att := npc.rollSkill(FIGHTING)
-	if att < 4 && npc.genome[BENNY_STRAT].get() == BENNY_TO_ATTACK {
+	if att < 4 && npc.genome[BENNY_STRAT].get() == BENNY_TO_ATTACK && npc.hasBenny() {
 		npc.useBenny()
 		att = npc.rollSkill(FIGHTING)
 	}
@@ -76,6 +77,9 @@ func (npc *Fighter) hasBenny() bool {
 }
 
 func (npc *Fighter) useBenny() {
+	if npc.usedBenny == npc.benniesCount {
+		log.Fatal("No benny left")
+	}
 	npc.usedBenny++
 }
 
@@ -123,6 +127,16 @@ func (npc *Fighter) getWoundsPenalty() int {
 }
 
 func (npc *Fighter) getDamageRoll() int {
+	roll := npc.rollDamage()
+	if roll < 8 && npc.genome[BENNY_STRAT].(*Strategy).get() == BENNY_TO_DAMAGE && npc.hasBenny() {
+		npc.useBenny()
+		roll = max(roll, npc.rollDamage())
+	}
+
+	return roll
+}
+
+func (npc *Fighter) rollDamage() int {
 	str := npc.genome[STRENGTH].get()
 	damageDice := npc.meleeWeapon
 	if damageDice > str {
@@ -138,6 +152,7 @@ func (npc *Fighter) isDead() bool {
 
 func (npc *Fighter) resetFight() {
 	npc.wounds = 0
+	npc.usedBenny = 0
 }
 
 func (npc *Fighter) resetEpoch() {

@@ -45,6 +45,7 @@ func TestAttackRollWithBenny(t *testing.T) {
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getAttackRoll()
+		f.resetFight() // reset the number of bennies
 	}
 
 	var avg float64 = float64(sum) / float64(enoughIteration)
@@ -54,7 +55,7 @@ func TestAttackRollWithBenny(t *testing.T) {
 }
 
 func TestDamageRollWithCappedStrength(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SOAK)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -93,6 +94,22 @@ func TestDamageRollWithStrength_D12(t *testing.T) {
 	// we should get the average for d8R+d12R
 	if math.Abs(avg-12.2) > 0.1 {
 		t.Fatal("Average of damage roll is not consistent with d8R+d12R around 5.1+7.1", "(", avg, ")")
+	}
+}
+
+func TestDamageRollWithStrength_D4_And_Benny(t *testing.T) {
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE)
+	sum := 0
+	for k := 0; k < enoughIteration; k++ {
+		sum += f.getDamageRoll()
+		f.resetFight() // reset the number of bennies
+	}
+
+	var avg float64 = float64(sum) / float64(enoughIteration)
+	// we should get the average for 2d4R
+	if math.Abs(avg-8.5) > 0.1 {
+		// note that without the benny we should be around 6.7, see TestDamageRollWithCappedStrength
+		t.Fatal("Average of damage roll is not consistent with 2d4R and a benny around 8.5", "(", avg, ")")
 	}
 }
 
