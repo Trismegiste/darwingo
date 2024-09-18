@@ -1,12 +1,13 @@
 export default (host) => ({
     poolSize: 1000,
     maxRound: 10,
-    epoch: 10,
+    maxEpoch: 10,
     socket: null,
     statByCost: {},
     maxes: {
         cost: 30
     },
+    currentEpoch: null,
 
     run() {
         if (typeof(EventSource) === "undefined") {
@@ -16,7 +17,7 @@ export default (host) => ({
         let url = new URL(host)
         url.searchParams.append('poolSize', this.poolSize)
         url.searchParams.append('maxRound', this.maxRound)
-        url.searchParams.append('epoch', this.epoch)
+        url.searchParams.append('epoch', this.maxEpoch)
 
         // close previous socket, because this stop the server from running
         if (this.socket !== null) {
@@ -38,7 +39,7 @@ export default (host) => ({
                     count: state.MaxCount,
                     victory: state.MaxAvgVictory
                 }
-                this.epoch = state.Epoch
+                this.currentEpoch = state.Epoch
             }
         }
     }
