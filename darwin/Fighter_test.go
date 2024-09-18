@@ -28,7 +28,7 @@ func TestFactory(t *testing.T) {
 }
 
 func TestAttackRoll(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SHAKEN)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getAttackRoll()
@@ -37,6 +37,19 @@ func TestAttackRoll(t *testing.T) {
 	var avg float64 = float64(sum) / float64(enoughIteration)
 	if math.Abs(avg-8.0) > 0.1 {
 		t.Fatal("Average of joker attack at d12 is not around 8.0", "(", avg, ")")
+	}
+}
+
+func TestAttackRollWithBenny(t *testing.T) {
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_ATTACK)
+	sum := 0
+	for k := 0; k < enoughIteration; k++ {
+		sum += f.getAttackRoll()
+	}
+
+	var avg float64 = float64(sum) / float64(enoughIteration)
+	if math.Abs(avg-8.8) > 0.1 {
+		t.Fatal("Average of joker attack at d12 with a benny re-roll is not around 8.8", "(", avg, ")")
 	}
 }
 
