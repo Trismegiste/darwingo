@@ -20,7 +20,8 @@ func BuildWorld(size int) *World {
 			rand.Intn(3),
 			random.RandomTrait(),
 			random.RandomTrait(),
-			random.RandomTrait()))
+			random.RandomTrait(),
+			rand.Intn(4)))
 	}
 
 	return w

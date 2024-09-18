@@ -13,19 +13,37 @@ const (
 	VIGOR
 	STRENGTH
 	AGILITY
+	BENNY_STRAT
+)
+
+const (
+	BENNY_TO_ATTACK int = iota
+	BENNY_TO_SOAK
+	BENNY_TO_SHAKEN
+	BENNY_TO_DAMAGE
 )
 
 const DEFAULT_DAMAGE_DICE = 8
 
 // Fighter type
 type Fighter struct {
-	wounds  int
-	victory int
-	genome  [5]Gene
+	wounds       int
+	victory      int
+	genome       [6]Gene
+	usedBenny    int
+	benniesCount int
+	shaken       bool
+	meleeWeapon  int
 }
 
 func (npc *Fighter) getAttackRoll() int {
-	return random.JokerRoll(npc.getFighting())
+	att := npc.rollSkill(FIGHTING)
+	if att < 4 && npc.genome[BENNY_STRAT].get() == BENNY_TO_ATTACK {
+		npc.useBenny()
+		att = npc.rollSkill(FIGHTING)
+	}
+
+	return att
 }
 
 func (npc *Fighter) getFighting() int {
@@ -37,21 +55,76 @@ func (target *Fighter) receiveAttack(attacker *Fighter) {
 	if delta >= 0 {
 		// hit ! Calculate the damage
 		damage := attacker.getDamageRoll()
+		// Raise ?
 		if delta >= 4 {
 			damage += random.ExplodingDice(6)
 		}
+		target.receiveDamage(damage)
+	}
+}
 
-		// Effect of damage
+func (target *Fighter) receiveDamage(damage int) {
+	// compare damage and toughness
+	if damage >= target.getToughness() {
 		injuries := (damage - target.getToughness()) / 4
-		if injuries > 0 {
-			target.wounds += injuries
+		target.addWounds(injuries)
+	}
+}
+
+func (npc *Fighter) hasBenny() bool {
+	return npc.usedBenny < npc.benniesCount
+}
+
+func (npc *Fighter) useBenny() {
+	npc.usedBenny++
+}
+
+func (target *Fighter) addWounds(w int) {
+	if w == 0 {
+		// new shaken condition :
+		if target.shaken {
+			// if already shaken, unshake before getting a new shaken by using a benny
+			if (target.genome[BENNY_STRAT].get() == BENNY_TO_SHAKEN) && target.hasBenny() {
+				target.useBenny()
+			} else {
+				target.wounds++ // 2 shaken = 1 wound
+			}
+		} else {
+			// not already shaken but damage below 1 wound, get shaken condition
+			target.shaken = true
+		}
+	} else {
+		// receiving 1 or more wounds
+		if (target.genome[BENNY_STRAT].get() == BENNY_TO_SOAK) && target.hasBenny() {
+			// use benny strategy is to soak wounds, we try
+			target.useBenny()
+			soak := target.rollAttr(VIGOR) / 4
+			w -= soak
+		}
+		if w > 0 {
+			target.wounds += w
+			target.shaken = true
 		}
 	}
 }
 
+func (npc *Fighter) rollAttr(idxGenome int8) int {
+	// transcast to Attribute is not mandatory but it prevents to use a CappedBonus or a Strategy by mistake
+	return random.JokerRoll(npc.genome[idxGenome].(*Attribute).get()) + npc.getWoundsPenalty()
+}
+
+func (npc *Fighter) rollSkill(idxGenome int8) int {
+	// transcast to Skill is not mandatory but it prevents to use a CappedBonus or a Strategy by mistake
+	return random.JokerRoll(npc.genome[idxGenome].(*Skill).get()) + npc.getWoundsPenalty()
+}
+
+func (npc *Fighter) getWoundsPenalty() int {
+	return -npc.wounds
+}
+
 func (npc *Fighter) getDamageRoll() int {
 	str := npc.genome[STRENGTH].get()
-	damageDice := DEFAULT_DAMAGE_DICE
+	damageDice := npc.meleeWeapon
 	if damageDice > str {
 		damageDice = str
 	}
@@ -105,13 +178,16 @@ func (npc *Fighter) mimic(original *Fighter) {
 }
 
 // Factory
-func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int) *Fighter {
+func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int, bennyStrat int) *Fighter {
 	f := Fighter{}
 	f.genome[FIGHTING] = &Skill{fighting}
 	f.genome[BLOCK] = &CappedBonus{blockEdge, 0, 2}
 	f.genome[VIGOR] = &Attribute{vig}
 	f.genome[STRENGTH] = &Attribute{str}
 	f.genome[AGILITY] = &Attribute{agi}
+	f.genome[BENNY_STRAT] = &Strategy{bennyStrat, 4}
+	f.meleeWeapon = DEFAULT_DAMAGE_DICE
+	f.benniesCount = 3
 
 	return &f
 }
@@ -123,6 +199,7 @@ func (npc Fighter) String() string {
 		"STR:", npc.genome[STRENGTH].get(), " ",
 		"AGI:", npc.genome[AGILITY].get(), " ",
 		"Block:", npc.genome[BLOCK].get(), " ",
+		"BS:", npc.genome[BENNY_STRAT].get(), " ",
 		"Cost:", npc.getCost(), " ",
 		"Win:", npc.victory)
 }

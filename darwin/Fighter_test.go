@@ -8,7 +8,7 @@ import (
 const enoughIteration = 1000000
 
 func TestFactory(t *testing.T) {
-	var f *Fighter = BuildFighter(8, 1, 6, 4, 4)
+	var f *Fighter = BuildFighter(8, 1, 6, 4, 4, 0)
 
 	if f.getFighting() != 8 {
 		t.Fatal("Fighting skill is not initialized to 8")
@@ -28,7 +28,7 @@ func TestFactory(t *testing.T) {
 }
 
 func TestAttackRoll(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getAttackRoll()
@@ -41,7 +41,7 @@ func TestAttackRoll(t *testing.T) {
 }
 
 func TestDamageRollWithCappedStrength(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -56,7 +56,7 @@ func TestDamageRollWithCappedStrength(t *testing.T) {
 }
 
 func TestDamageRollWithStrength_D8(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 8, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 8, 4, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -70,7 +70,7 @@ func TestDamageRollWithStrength_D8(t *testing.T) {
 }
 
 func TestDamageRollWithStrength_D12(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 12, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 12, 4, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -84,7 +84,7 @@ func TestDamageRollWithStrength_D12(t *testing.T) {
 }
 
 func Test_ZeroFighterCost(t *testing.T) {
-	var f *Fighter = BuildFighter(4, 0, 4, 4, 4)
+	var f *Fighter = BuildFighter(4, 0, 4, 4, 4, 0)
 
 	if f.getCost() != 0 {
 		t.Fatal("Cost should be equal to 0")
@@ -92,7 +92,7 @@ func Test_ZeroFighterCost(t *testing.T) {
 }
 
 func Test_MiddleFighterCost(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 1, 6, 6, 6)
+	var f *Fighter = BuildFighter(12, 1, 6, 6, 6, 0)
 
 	if f.getCost() != (1+6)+2+2+2+2 {
 		t.Fatal("Cost should be equal to 15", f.getCost())
@@ -100,7 +100,7 @@ func Test_MiddleFighterCost(t *testing.T) {
 }
 
 func Test_HighFighterCost(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 1, 10, 8, 10)
+	var f *Fighter = BuildFighter(12, 1, 10, 8, 10, 0)
 
 	if f.getCost() != (3+2)+2+6+4+6 {
 		t.Fatal("Cost should be equal to 23")

@@ -26,6 +26,8 @@ export default (host) => ({
         this.socket = new EventSource(url)
         this.socket.onmessage = (event) => {
             if (event.data == 'Done') {
+                // the simulation has ended and the socket is closed on the server-side.
+                // We close the socket on the client-side to prevent re-openning, which restarts the simulation
                 this.socket.close()
             } else {
                 const state = JSON.parse(event.data)
