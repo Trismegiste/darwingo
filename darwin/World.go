@@ -98,26 +98,47 @@ func (w *World) Log(howmany int) {
 	}
 }
 
-type StatCost struct {
+type GroupInfo struct {
 	GroupCount  int
 	AvgVictory  float32
 	BestFighter *Fighter
 }
 
-func (w *World) GetStatPerCost() map[int]*StatCost {
+type CostStat struct {
+	InfoPerCost   map[int]*GroupInfo
+	Epoch         int
+	MaxCost       int
+	MaxAvgVictory float32
+	MaxCount      int
+}
+
+func (w *World) GetStatPerCost() *CostStat {
 	// the stats we'll return
-	stat := make(map[int]*StatCost)
+	stat := new(CostStat)
+	stat.InfoPerCost = make(map[int]*GroupInfo)
 
 	for cost, group := range w.perCost {
-		info := new(StatCost)
+		if cost > stat.MaxCost {
+			stat.MaxCost = cost
+		}
+
+		info := new(GroupInfo)
 		info.BestFighter = group[0]
 		info.GroupCount = len(group)
+		if info.GroupCount > stat.MaxCount {
+			stat.MaxCount = info.GroupCount
+		}
+
 		sum := 0
 		for _, fighter := range group {
 			sum += fighter.victory
 		}
 		info.AvgVictory = float32(sum) / float32(len(group))
-		stat[cost] = info
+		if info.AvgVictory > stat.MaxAvgVictory {
+			stat.MaxAvgVictory = info.AvgVictory
+		}
+
+		stat.InfoPerCost[cost] = info
 	}
 
 	return stat

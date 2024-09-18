@@ -47,6 +47,7 @@ func main() {
 				world.Selection()
 				world.Log(5)
 				stats := world.GetStatPerCost()
+				stats.Epoch = k
 				content, _ := json.Marshal(stats)
 				fmt.Fprintf(w, "data: %s\n\n", content)
 

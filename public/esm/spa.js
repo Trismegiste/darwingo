@@ -26,31 +26,14 @@ export default (host) => ({
             if (event.data == 'Done') {
                 this.socket.close()
             } else {
-                this.statByCost = JSON.parse(event.data)
-                this.maxes = this.getBoundingBox()
-                console.log(this.statByCost)
+                const state = JSON.parse(event.data)
+                this.statByCost = state.InfoPerCost
+                this.maxes = {
+                    cost: state.MaxCost,
+                    count: state.MaxCount,
+                    victory: state.MaxAvgVictory
+                }
             }
         }
-    },
-
-    getBoundingBox() {
-        let maxCost = -Infinity
-        let maxCount = -Infinity
-        let maxVictory = -Infinity
-
-        for (let [cost, info] of Object.entries(this.statByCost)) {
-            cost = parseInt(cost, 10)
-            if (info.GroupCount > maxCount) {
-                maxCount = info.GroupCount
-            }
-            if (info.AvgVictory > maxVictory) {
-                maxVictory = info.AvgVictory
-            }
-            if (cost > maxCost) {
-                maxCost = cost
-            }          
-        }
-      
-        return {cost:maxCost, count:maxCount, victory:maxVictory}
     }
 })
