@@ -4,7 +4,9 @@ export default (host) => ({
     epoch: 10,
     socket: null,
     statByCost: {},
-    maxes: {},
+    maxes: {
+        cost: 30
+    },
 
     run() {
         if (typeof(EventSource) === "undefined") {
@@ -28,8 +30,9 @@ export default (host) => ({
             } else {
                 const state = JSON.parse(event.data)
                 this.statByCost = state.InfoPerCost
+                const lastMax = this.maxes.cost // this line to prevent the graph continuously jumping, it's only growing
                 this.maxes = {
-                    cost: state.MaxCost,
+                    cost: state.MaxCost > lastMax ? state.MaxCost : lastMax,
                     count: state.MaxCount,
                     victory: state.MaxAvgVictory
                 }
