@@ -153,6 +153,7 @@ func (npc *Fighter) isDead() bool {
 func (npc *Fighter) resetFight() {
 	npc.wounds = 0
 	npc.usedBenny = 0
+	npc.shaken = false
 }
 
 func (npc *Fighter) resetEpoch() {

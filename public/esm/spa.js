@@ -1,6 +1,6 @@
 export default (host) => ({
     poolSize: 1000,
-    maxRound: 10,
+    maxRound: 20,
     maxEpoch: 10,
     socket: null,
     statByCost: {},

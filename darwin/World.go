@@ -68,16 +68,25 @@ func runFight(fighter1, fighter2 *Fighter, maxRound int) {
 		round++
 	}
 
-	// aftermath
+	// aftermath: is someone is dead ?
 	if !fighter1.isDead() && fighter2.isDead() {
 		fighter1.incVictory()
 	}
 	if !fighter2.isDead() && fighter1.isDead() {
 		fighter2.incVictory()
 	}
+	// aftermath : if maxRound is reached, who is the most wounded ?
+	if round == maxRound {
+		if fighter1.wounds > fighter2.wounds {
+			fighter2.incVictory()
+		}
+		if fighter1.wounds < fighter2.wounds {
+			fighter1.incVictory()
+		}
+	}
 }
 
-// Darwin selection
+// Darwin selection : for each group by cost, we replace the loser by the best with mutation
 func (w *World) Selection() {
 	// selection per cost
 	for cost, group := range w.perCost {
