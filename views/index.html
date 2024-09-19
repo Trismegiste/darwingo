@@ -10,7 +10,7 @@
                 <g>
                     <text x="50" y="50" x-text="currentEpoch"></text>
                     <template x-for="(info, cost) in statByCost" :key="cost">
-                        <line x-bind:x1="cost*1200/maxes.cost" x-bind:x2="cost*1200/maxes.cost" y1="400" x-bind:y2="400*(1-info.GroupCount/maxes.count)" style="stroke: blue; stroke-width:10px"></line>
+                        <line x-on:mouseover="popover" x-on:mouseout="popout" x-bind:data-detail="info.Winner.Detail" x-bind:x1="cost*1200/maxes.cost" x-bind:x2="cost*1200/maxes.cost" y1="400" x-bind:y2="400*(1-info.GroupCount/maxes.count)" style="stroke: blue; stroke-width:10px"></line>
                     </template>
                 </g>
             </svg>
@@ -22,17 +22,20 @@
                 </g>
             </svg>
         </div>
-        <form x-on:submit.prevent="run">
-            <fieldset>
-                <label>Pool Size</label>
-                <input type="number" x-model="poolSize" />
-                <label>Epoch</label>
-                <input type="number" x-model="maxEpoch" />
-                <label>Max Rounds</label>
-                <input type="number" x-model="maxRound" />
-                <input type="submit" value="Run" />
-            </fieldset>
-        </form>
+        <aside>
+            <form x-on:submit.prevent="run">
+                <fieldset>
+                    <label>Pool Size</label>
+                    <input type="number" x-model="poolSize" />
+                    <label>Epoch</label>
+                    <input type="number" x-model="maxEpoch" />
+                    <label>Max Rounds</label>
+                    <input type="number" x-model="maxRound" />
+                    <input type="submit" value="Run" />
+                </fieldset>
+            </form>
+            <article x-text="infoBox"></article>
+        </aside>
     </div>
 </main>
 {% endblock %}

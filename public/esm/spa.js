@@ -8,6 +8,7 @@ export default (host) => ({
         cost: 30
     },
     currentEpoch: null,
+    infoBox: null,
 
     run() {
         if (typeof(EventSource) === "undefined") {
@@ -42,5 +43,14 @@ export default (host) => ({
                 this.currentEpoch = state.Epoch
             }
         }
+    },
+
+    popover(event) {
+        this.infoBox = event.currentTarget.dataset.detail
+    },
+
+    popout(event) {
+        this.infoBox = null
     }
+
 })
