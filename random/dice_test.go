@@ -1,7 +1,7 @@
 package random
 
 import (
-	"math"
+	"main/assert"
 	"testing"
 )
 
@@ -14,9 +14,7 @@ func TestAverageExplodingD4(t *testing.T) {
 	}
 
 	var avg float64 = float64(sum) / float64(enoughIteration)
-	if math.Abs(avg-3.3) > 0.1 {
-		t.Fatal("Average of d4R is not around 3.3", "(", avg, ")")
-	}
+	assert.AssertFloat(t, 3.3, avg, 0.1, "Average of d4R")
 }
 
 func TestAverageExplodingD6(t *testing.T) {
@@ -26,9 +24,7 @@ func TestAverageExplodingD6(t *testing.T) {
 	}
 
 	var avg float64 = float64(sum) / float64(enoughIteration)
-	if math.Abs(avg-4.2) > 0.1 {
-		t.Fatal("Average of d6R is not around 4.2", "(", avg, ")")
-	}
+	assert.AssertFloat(t, 4.2, avg, 0.1, "Average of d6R")
 }
 
 func TestAverageExplodingD8(t *testing.T) {
@@ -38,9 +34,7 @@ func TestAverageExplodingD8(t *testing.T) {
 	}
 
 	var avg float64 = float64(sum) / float64(enoughIteration)
-	if math.Abs(avg-5.1) > 0.1 {
-		t.Fatal("Average of d8R is not around 5.1", "(", avg, ")")
-	}
+	assert.AssertFloat(t, 5.1, avg, 0.1, "Average of d8R")
 }
 
 func TestAverageExplodingD12(t *testing.T) {
@@ -50,9 +44,7 @@ func TestAverageExplodingD12(t *testing.T) {
 	}
 
 	var avg float64 = float64(sum) / float64(enoughIteration)
-	if math.Abs(avg-7.1) > 0.1 {
-		t.Fatal("Average of d12R is not around 7.1", "(", avg, ")")
-	}
+	assert.AssertFloat(t, 7.1, avg, 0.1, "Average of d12R")
 }
 
 func TestAverageJokerRollingD4(t *testing.T) {
@@ -62,9 +54,7 @@ func TestAverageJokerRollingD4(t *testing.T) {
 	}
 
 	var avg float64 = float64(sum) / float64(enoughIteration)
-	if math.Abs(avg-5.3) > 0.1 {
-		t.Fatal("Average of joker roll d4 is not around 5.3", "(", avg, ")")
-	}
+	assert.AssertFloat(t, 5.3, avg, 0.1, "Average of joker roll d4")
 }
 
 func TestAverageJokerRollingD12(t *testing.T) {
@@ -74,7 +64,5 @@ func TestAverageJokerRollingD12(t *testing.T) {
 	}
 
 	var avg float64 = float64(sum) / float64(enoughIteration)
-	if math.Abs(avg-8.0) > 0.1 {
-		t.Fatal("Average of joker roll d12 is not around 8.0", "(", avg, ")")
-	}
+	assert.AssertFloat(t, 8.0, avg, 0.1, "Average of joker roll d12")
 }
