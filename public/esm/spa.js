@@ -37,7 +37,7 @@ export default (host) => ({
                 this.maxes = {
                     cost: state.MaxCost > lastMax ? state.MaxCost : lastMax,
                     count: state.MaxCount,
-                    victory: state.MaxAvgVictory
+                    victory: state.MaxVictory
                 }
                 this.currentEpoch = state.Epoch
             }
