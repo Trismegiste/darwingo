@@ -109,9 +109,10 @@ func (w *World) Log(howmany int) {
 }
 
 type GroupInfo struct {
-	GroupCount  int
-	AvgVictory  float32
-	BestFighter *Fighter
+	GroupCount int
+	AvgVictory float32
+	Winner     *Fighter
+	Loser      *Fighter
 }
 
 type CostStat struct {
@@ -133,17 +134,22 @@ func (w *World) GetStatPerCost() *CostStat {
 		}
 
 		info := new(GroupInfo)
-		info.BestFighter = group[0]
 		info.GroupCount = len(group)
+		// tracking the max of group count per cost
 		if info.GroupCount > stat.MaxCount {
 			stat.MaxCount = info.GroupCount
 		}
 
+		// we keep the best and the worst fighter in the group
+		info.Winner = group[0]
+		info.Loser = group[info.GroupCount-1]
+		// calculate the average of victory in the group
 		sum := 0
 		for _, fighter := range group {
 			sum += fighter.victory
 		}
 		info.AvgVictory = float32(sum) / float32(len(group))
+		// tracking the max of the average victory
 		if info.AvgVictory > stat.MaxAvgVictory {
 			stat.MaxAvgVictory = info.AvgVictory
 		}

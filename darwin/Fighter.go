@@ -1,6 +1,7 @@
 package darwin
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"main/random"
@@ -218,4 +219,14 @@ func (npc Fighter) String() string {
 		"BS:", npc.genome[BENNY_STRAT].get(), " ",
 		"Cost:", npc.getCost(), " ",
 		"Win:", npc.victory)
+}
+
+func (f Fighter) MarshalJSON() ([]byte, error) {
+	return json.Marshal(struct {
+		Detail  string
+		Victory int
+	}{
+		Detail:  f.String(),
+		Victory: f.victory,
+	})
 }
