@@ -1,6 +1,7 @@
 package darwin
 
 import (
+	"main/assert"
 	"math"
 	"testing"
 )
@@ -9,36 +10,26 @@ func Test_AttributeCost(t *testing.T) {
 	attr := new(Attribute)
 
 	attr.set(4)
-	if attr.getCost() != 0 {
-		t.Fatal("Cost should be equal to 0")
-	}
+	assert.AssertInt(t, 0, attr.getCost(), "d4 costs 0")
+
 	attr.set(8)
-	if attr.getCost() != 4 {
-		t.Fatal("Cost should be equal to 4")
-	}
+	assert.AssertInt(t, 4, attr.getCost(), "d8 costs 4")
 
 	attr.set(12)
-	if attr.getCost() != 8 {
-		t.Fatal("Cost should be equal to 8")
-	}
+	assert.AssertInt(t, 8, attr.getCost(), "d12 costs 8")
 }
 
 func Test_AttributeDefense(t *testing.T) {
 	attr := new(Attribute)
 
 	attr.set(4)
-	if attr.getPassiveDefense() != 4 {
-		t.Fatal("Defense should be equal to 4")
-	}
+	assert.AssertInt(t, 4, attr.getPassiveDefense(), "Defense for d4")
+
 	attr.set(8)
-	if attr.getPassiveDefense() != 6 {
-		t.Fatal("Cost should be equal to 6")
-	}
+	assert.AssertInt(t, 6, attr.getPassiveDefense(), "Defense for d8")
 
 	attr.set(12)
-	if attr.getPassiveDefense() != 8 {
-		t.Fatal("Cost should be equal to 8")
-	}
+	assert.AssertInt(t, 8, attr.getPassiveDefense(), "Defense for d12")
 }
 
 func Test_AttributeMutationStat(t *testing.T) {
