@@ -16,13 +16,7 @@ const (
 	STRENGTH
 	AGILITY
 	BENNY_STRAT
-)
-
-const (
-	BENNY_TO_ATTACK int = iota
-	BENNY_TO_SOAK
-	BENNY_TO_SHAKEN
-	BENNY_TO_DAMAGE
+	ATTACK_MODE
 )
 
 const DEFAULT_DAMAGE_DICE = 8
@@ -31,7 +25,7 @@ const DEFAULT_DAMAGE_DICE = 8
 type Fighter struct {
 	wounds       int
 	victory      int
-	genome       [6]Gene
+	genome       [7]Gene
 	usedBenny    int
 	benniesCount int
 	shaken       bool
@@ -40,10 +34,13 @@ type Fighter struct {
 
 func (npc *Fighter) getAttackRoll() int {
 	att := npc.rollSkill(FIGHTING)
+
 	if att < 4 && npc.genome[BENNY_STRAT].get() == BENNY_TO_ATTACK && npc.hasBenny() {
 		npc.useBenny()
 		att = npc.rollSkill(FIGHTING)
 	}
+
+	att += npc.genome[ATTACK_MODE].(*WildAttack).getAttBonus()
 
 	return att
 }
@@ -129,10 +126,13 @@ func (npc *Fighter) getWoundsPenalty() int {
 
 func (npc *Fighter) getDamageRoll() int {
 	roll := npc.rollDamage()
+
 	if roll < 8 && npc.genome[BENNY_STRAT].(*Strategy).get() == BENNY_TO_DAMAGE && npc.hasBenny() {
 		npc.useBenny()
 		roll = max(roll, npc.rollDamage())
 	}
+
+	roll += npc.genome[ATTACK_MODE].(*WildAttack).getAttBonus()
 
 	return roll
 }
@@ -162,7 +162,11 @@ func (npc *Fighter) resetEpoch() {
 }
 
 func (npc *Fighter) getParry() int {
-	return npc.genome[FIGHTING].(*Skill).getPassiveDefense() + npc.genome[BLOCK].get()
+	parry := npc.genome[FIGHTING].(*Skill).getPassiveDefense()
+	parry += npc.genome[BLOCK].get()
+	parry += npc.genome[ATTACK_MODE].(*WildAttack).getParryMalus()
+
+	return parry
 }
 
 func (npc *Fighter) getToughness() int {
@@ -195,7 +199,7 @@ func (npc *Fighter) mimic(original *Fighter) {
 }
 
 // Factory
-func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int, bennyStrat int) *Fighter {
+func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int, bennyStrat int, attMode int) *Fighter {
 	f := Fighter{}
 	f.genome[FIGHTING] = &Skill{fighting}
 	f.genome[BLOCK] = &CappedBonus{blockEdge, 0, 2}
@@ -203,6 +207,7 @@ func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int, bennyS
 	f.genome[STRENGTH] = &Attribute{str}
 	f.genome[AGILITY] = &Attribute{agi}
 	f.genome[BENNY_STRAT] = &Strategy{bennyStrat, 4}
+	f.genome[ATTACK_MODE] = &WildAttack{attMode}
 	f.meleeWeapon = DEFAULT_DAMAGE_DICE
 	f.benniesCount = 3
 
@@ -216,7 +221,8 @@ func (npc Fighter) String() string {
 		"STR:", npc.genome[STRENGTH].get(), " ",
 		"AGI:", npc.genome[AGILITY].get(), " ",
 		"Block:", npc.genome[BLOCK].get(), " ",
-		"BS:", npc.genome[BENNY_STRAT].get(), " ",
+		"BenStr:", npc.genome[BENNY_STRAT].get(), " ",
+		"AttMod:", npc.genome[ATTACK_MODE].get(), " ",
 		"Cost:", npc.getCost(), " ",
 		"Win:", npc.victory)
 }

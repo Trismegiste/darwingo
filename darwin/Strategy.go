@@ -2,6 +2,13 @@ package darwin
 
 import "math/rand"
 
+const (
+	BENNY_TO_ATTACK int = iota
+	BENNY_TO_SOAK
+	BENNY_TO_SHAKEN
+	BENNY_TO_DAMAGE
+)
+
 type Strategy struct {
 	current int // index of current strategy
 	choices int // how many strategies are possible ?
