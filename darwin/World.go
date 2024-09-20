@@ -23,6 +23,7 @@ func BuildWorld(size int) *World {
 			random.RandomTrait(),
 			rand.Intn(4),
 			rand.Intn(2),
+			random.RandomTrait(),
 		))
 	}
 
@@ -65,6 +66,8 @@ func runFight(fighter1, fighter2 *Fighter, maxRound int) {
 
 	// fight
 	for !fighter1.isDead() && !fighter2.isDead() && round < maxRound {
+		fighter1.resetRound()
+		fighter2.resetRound()
 		fighter1.receiveAttack(fighter2)
 		fighter2.receiveAttack(fighter1)
 		round++

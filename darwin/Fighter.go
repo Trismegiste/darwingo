@@ -15,6 +15,7 @@ const (
 	VIGOR
 	STRENGTH
 	AGILITY
+	SPIRIT
 	BENNY_STRAT
 	ATTACK_MODE
 )
@@ -25,21 +26,46 @@ const DEFAULT_DAMAGE_DICE = 8
 type Fighter struct {
 	wounds       int
 	victory      int
-	genome       [7]Gene
+	genome       [8]Gene
 	usedBenny    int
 	benniesCount int
 	shaken       bool
 	meleeWeapon  int
 }
 
+func (f *Fighter) resetRound() {
+	f.tryUnshake()
+}
+
+func (f *Fighter) tryUnshake() {
+	unshake := f.rollAttr(SPIRIT)
+
+	if unshake >= 4 {
+		f.shaken = false // new rule for SWADE
+		return
+	}
+
+	if f.canUseBennyStrategy(BENNY_TO_SHAKEN) {
+		f.shaken = false
+		f.useBenny()
+	}
+}
+
 func (npc *Fighter) getAttackRoll() int {
+	// if shaken, no attack
+	if npc.shaken {
+		return 0
+	}
+
 	att := npc.rollSkill(FIGHTING)
 
-	if att < 4 && npc.genome[BENNY_STRAT].get() == BENNY_TO_ATTACK && npc.hasBenny() {
+	// if attack has failed and the benny strategy is attack, re-roll with a benny (if any benny left)
+	if att < 4 && npc.canUseBennyStrategy(BENNY_TO_ATTACK) {
 		npc.useBenny()
 		att = npc.rollSkill(FIGHTING)
 	}
 
+	// add bonus from wild attack
 	att += npc.genome[ATTACK_MODE].(*WildAttack).getAttBonus()
 
 	return att
@@ -86,7 +112,7 @@ func (target *Fighter) addWounds(w int) {
 		// new shaken condition :
 		if target.shaken {
 			// if already shaken, unshake before getting a new shaken by using a benny
-			if (target.genome[BENNY_STRAT].get() == BENNY_TO_SHAKEN) && target.hasBenny() {
+			if target.canUseBennyStrategy(BENNY_TO_SHAKEN) {
 				target.useBenny()
 			} else {
 				target.wounds++ // 2 shaken = 1 wound
@@ -97,7 +123,7 @@ func (target *Fighter) addWounds(w int) {
 		}
 	} else {
 		// receiving 1 or more wounds
-		if (target.genome[BENNY_STRAT].get() == BENNY_TO_SOAK) && target.hasBenny() {
+		if target.canUseBennyStrategy(BENNY_TO_SOAK) {
 			// use benny strategy is to soak wounds, we try
 			target.useBenny()
 			soak := target.rollAttr(VIGOR) / 4
@@ -124,10 +150,15 @@ func (npc *Fighter) getWoundsPenalty() int {
 	return -npc.wounds
 }
 
+// test if the fighter use the given strategy for bennies and if she has a benny left
+func (f *Fighter) canUseBennyStrategy(strat int) bool {
+	return f.genome[BENNY_STRAT].(*Strategy).get() == strat && f.hasBenny()
+}
+
 func (npc *Fighter) getDamageRoll() int {
 	roll := npc.rollDamage()
 
-	if roll < 8 && npc.genome[BENNY_STRAT].(*Strategy).get() == BENNY_TO_DAMAGE && npc.hasBenny() {
+	if roll < 8 && npc.canUseBennyStrategy(BENNY_TO_DAMAGE) {
 		npc.useBenny()
 		roll = max(roll, npc.rollDamage())
 	}
@@ -199,13 +230,14 @@ func (npc *Fighter) mimic(original *Fighter) {
 }
 
 // Factory
-func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int, bennyStrat int, attMode int) *Fighter {
+func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int, bennyStrat int, attMode int, spi int) *Fighter {
 	f := Fighter{}
 	f.genome[FIGHTING] = &Skill{fighting}
 	f.genome[BLOCK] = &CappedBonus{blockEdge, 0, 2}
 	f.genome[VIGOR] = &Attribute{vig}
 	f.genome[STRENGTH] = &Attribute{str}
 	f.genome[AGILITY] = &Attribute{agi}
+	f.genome[SPIRIT] = &Attribute{spi}
 	f.genome[BENNY_STRAT] = &Strategy{bennyStrat, 4}
 	f.genome[ATTACK_MODE] = &WildAttack{attMode}
 	f.meleeWeapon = DEFAULT_DAMAGE_DICE
@@ -216,10 +248,11 @@ func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int, bennyS
 
 // Print
 func (npc Fighter) String() string {
-	return fmt.Sprint("Att:", npc.getFighting(), " ",
+	return fmt.Sprint("Att:", npc.genome[STRENGTH].get(), " ",
 		"VIG:", npc.genome[VIGOR].get(), " ",
 		"STR:", npc.genome[STRENGTH].get(), " ",
 		"AGI:", npc.genome[AGILITY].get(), " ",
+		"SPI:", npc.genome[SPIRIT].get(), " ",
 		"Block:", npc.genome[BLOCK].get(), " ",
 		"BenStr:", npc.genome[BENNY_STRAT].get(), " ",
 		"AttMod:", npc.genome[ATTACK_MODE].get(), " ",
