@@ -71,6 +71,7 @@ func (npc *Fighter) getAttackRoll() int {
 	return att
 }
 
+// Gets the dice for Fighting skill
 func (npc *Fighter) getFighting() int {
 	return npc.genome[FIGHTING].get()
 }
@@ -129,6 +130,7 @@ func (target *Fighter) addWounds(w int) {
 			soak := target.rollAttr(VIGOR) / 4
 			w -= soak
 		}
+		// if wounds are canceled by the soak roll, no wounds and no shaken
 		if w > 0 {
 			target.wounds += w
 			target.shaken = true
