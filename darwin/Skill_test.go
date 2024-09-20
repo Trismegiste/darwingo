@@ -1,6 +1,7 @@
 package darwin
 
 import (
+	"main/assert"
 	"math"
 	"testing"
 )
@@ -8,15 +9,12 @@ import (
 func Test_SkillCost(t *testing.T) {
 	gene := new(Skill)
 
+	gene.set(4)
+	assert.AssertInt(t, 0, gene.getCost(), "d4 costs 0")
 	gene.set(8)
-	if gene.getCost() != 2 {
-		t.Fatal("d8 to d4 is 2 slots")
-	}
-
+	assert.AssertInt(t, 2, gene.getCost(), "d8 costs 2")
 	gene.set(12)
-	if gene.getCost() != 4 {
-		t.Fatal("d12 to d4 is 4 slots")
-	}
+	assert.AssertInt(t, 4, gene.getCost(), "d12 costs 4")
 }
 
 func (sk Skill) getTotalCost(attr int) int {
@@ -25,48 +23,24 @@ func (sk Skill) getTotalCost(attr int) int {
 
 func Test_AdditionalCost_D4(t *testing.T) {
 	gene := Skill{4}
+	gene.set(4)
 
-	if gene.getCost() != 0 {
-		t.Fatal("d4 Skill costs 0")
-	}
-
-	if gene.getAdditionalCost(4) != 0 {
-		t.Fatal("No additional cost for a d4 Skill to d4 when Attribute is equal to d4")
-	}
-
-	if gene.getAdditionalCost(12) != 0 {
-		t.Fatal("No additional cost for a d4 Skill to d4 when Attribute is equal to d12")
-	}
-
+	assert.AssertInt(t, 0, gene.getAdditionalCost(4), "No additional cost for d4 with d4 attribute")
+	assert.AssertInt(t, 0, gene.getAdditionalCost(12), "No additional cost for d4 with d12 attribute")
 }
 
 func Test_AdditionalCost_D12(t *testing.T) {
 	gene := new(Skill)
 	gene.set(12)
 
-	if gene.getAdditionalCost(12) != 0 {
-		t.Fatal("No additional cost for a d12 Skill to d4 when Attribute is equal to d12")
-	}
+	assert.AssertInt(t, 0, gene.getAdditionalCost(12), "No additional cost for d12 with d12 attribute")
+	assert.AssertInt(t, 1, gene.getAdditionalCost(10), "d12 with d10 cost one addtional slot")
 
-	if gene.getTotalCost(12) != 4 {
-		t.Fatal("d12 Skill to d4 is 4 slots if Attribute is equal to d12")
-	}
-
-	if gene.getTotalCost(10) != 5 {
-		t.Fatal("d12 Skill to d4 is 5 slots if Attribute is equal to d10")
-	}
-
-	if gene.getTotalCost(8) != 6 {
-		t.Fatal("d12 Skill to d4 is 7 slots if Attribute is equal to d8")
-	}
-
-	if gene.getTotalCost(4) != 8 {
-		t.Fatal("d12 Skill to d4 is 8 slots if Attribute is equal to d4")
-	}
-
-	if gene.getAdditionalCost(4) != 4 {
-		t.Fatal("4 additional slots for a d12 Skill to d4 when Attribute is equal to d4")
-	}
+	assert.AssertInt(t, 4, gene.getTotalCost(12), "d12 skill with d12 attribute")
+	assert.AssertInt(t, 5, gene.getTotalCost(10), "d12 skill with d10 attribute")
+	assert.AssertInt(t, 6, gene.getTotalCost(8), "d12 skill with d8 attribute")
+	assert.AssertInt(t, 8, gene.getTotalCost(4), "d12 skill with d4 attribute")
+	assert.AssertInt(t, 4, gene.getAdditionalCost(4), "Additional cost for d12 with d4 attribute")
 }
 
 func Test_SkillMutationStat(t *testing.T) {
