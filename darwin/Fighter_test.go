@@ -8,7 +8,7 @@ import (
 const enoughIteration = 1000000
 
 func TestFactory(t *testing.T) {
-	var f *Fighter = BuildFighter(8, 1, 6, 4, 4, 0, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(8, 1, 6, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0)
 
 	assert.AssertInt(t, 8, f.getFighting(), "Fighting skill initialisation")
 	assert.AssertInt(t, 7, f.getParry(), "Parry")
@@ -17,7 +17,7 @@ func TestFactory(t *testing.T) {
 }
 
 func TestAttackRoll(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SHAKEN, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SHAKEN, ATTMODE_STANDARD, 4, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getAttackRoll()
@@ -28,7 +28,7 @@ func TestAttackRoll(t *testing.T) {
 }
 
 func TestAttackRollWithBenny(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_ATTACK, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_ATTACK, ATTMODE_STANDARD, 4, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getAttackRoll()
@@ -40,7 +40,7 @@ func TestAttackRollWithBenny(t *testing.T) {
 }
 
 func TestDamageRollWithCappedStrength(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SOAK, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SOAK, ATTMODE_STANDARD, 4, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -53,7 +53,7 @@ func TestDamageRollWithCappedStrength(t *testing.T) {
 }
 
 func TestDamageRollWithStrength_D8(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 8, 4, 0, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 8, 4, 0, ATTMODE_STANDARD, 4, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -65,7 +65,7 @@ func TestDamageRollWithStrength_D8(t *testing.T) {
 }
 
 func TestDamageRollWithStrength_D12(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 12, 4, 0, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 12, 4, 0, ATTMODE_STANDARD, 4, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -77,7 +77,7 @@ func TestDamageRollWithStrength_D12(t *testing.T) {
 }
 
 func TestDamageRollWithStrength_D4_And_Benny(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -89,19 +89,19 @@ func TestDamageRollWithStrength_D4_And_Benny(t *testing.T) {
 }
 
 func Test_ZeroFighterCost(t *testing.T) {
-	var f *Fighter = BuildFighter(4, 0, 4, 4, 4, 0, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(4, 0, 4, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0)
 
 	assert.AssertInt(t, 0, f.getCost(), "Cost should be equal to 0")
 }
 
 func Test_MiddleFighterCost(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 1, 6, 6, 6, 0, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(12, 1, 6, 6, 6, 0, ATTMODE_STANDARD, 4, 0, 0)
 
 	assert.AssertInt(t, (1+6)+2+2+2+2, f.getCost(), "Cost should be equal to 15")
 }
 
 func Test_HighFighterCost(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 1, 10, 8, 10, 0, ATTMODE_STANDARD, 4)
+	var f *Fighter = BuildFighter(12, 1, 10, 8, 10, 0, ATTMODE_STANDARD, 4, 0, 0)
 
 	assert.AssertInt(t, (3+2)+2+6+4+6, f.getCost(), "Cost should be equal to 23")
 }

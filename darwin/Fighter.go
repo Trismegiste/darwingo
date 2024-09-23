@@ -10,14 +10,16 @@ import (
 
 // Indices of gene in the genome of Fighter
 const (
-	FIGHTING int8 = iota
-	BLOCK
-	VIGOR
-	STRENGTH
+	STRENGTH int8 = iota
 	AGILITY
+	VIGOR
 	SPIRIT
+	FIGHTING
 	BENNY_STRAT
 	ATTACK_MODE
+	EDGE_BLOCK
+	EDGE_COMBAT_REF
+	EDGE_TRADEMARK_W
 )
 
 const DEFAULT_DAMAGE_DICE = 8
@@ -26,7 +28,7 @@ const DEFAULT_DAMAGE_DICE = 8
 type Fighter struct {
 	wounds       int
 	victory      int
-	genome       [8]Gene
+	genome       [10]Gene
 	usedBenny    int
 	benniesCount int
 	shaken       bool
@@ -38,7 +40,7 @@ func (f *Fighter) resetRound() {
 }
 
 func (f *Fighter) tryUnshake() {
-	unshake := f.rollAttr(SPIRIT)
+	unshake := f.rollAttr(SPIRIT) + f.genome[EDGE_COMBAT_REF].(*CappedBonus).get()*2 // adding bonus of Combat Reflexe Edge
 
 	if unshake >= 4 {
 		f.shaken = false // new rule for SWADE
@@ -67,6 +69,8 @@ func (npc *Fighter) getAttackRoll() int {
 
 	// add bonus from wild attack
 	att += npc.genome[ATTACK_MODE].(*WildAttack).getAttBonus()
+	// add bonus from Trademark Weapon Edge
+	att += npc.genome[EDGE_TRADEMARK_W].(*CappedBonus).get()
 
 	return att
 }
@@ -196,7 +200,7 @@ func (npc *Fighter) resetEpoch() {
 
 func (npc *Fighter) getParry() int {
 	parry := npc.genome[FIGHTING].(*Skill).getPassiveDefense()
-	parry += npc.genome[BLOCK].get()
+	parry += npc.genome[EDGE_BLOCK].get()
 	parry += npc.genome[ATTACK_MODE].(*WildAttack).getParryMalus()
 
 	return parry
@@ -232,16 +236,19 @@ func (npc *Fighter) mimic(original *Fighter) {
 }
 
 // Factory
-func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int, bennyStrat int, attMode int, spi int) *Fighter {
+func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int,
+	bennyStrat int, attMode int, spi int, trademarkEdge int, combatRefEdge int) *Fighter {
 	f := Fighter{}
 	f.genome[FIGHTING] = &Skill{fighting}
-	f.genome[BLOCK] = &CappedBonus{blockEdge, 0, 2}
+	f.genome[EDGE_BLOCK] = &CappedBonus{blockEdge, 0, 2}
 	f.genome[VIGOR] = &Attribute{vig}
 	f.genome[STRENGTH] = &Attribute{str}
 	f.genome[AGILITY] = &Attribute{agi}
 	f.genome[SPIRIT] = &Attribute{spi}
 	f.genome[BENNY_STRAT] = &Strategy{bennyStrat, 4}
 	f.genome[ATTACK_MODE] = &WildAttack{attMode}
+	f.genome[EDGE_TRADEMARK_W] = &CappedBonus{trademarkEdge, 0, 2}
+	f.genome[EDGE_COMBAT_REF] = &CappedBonus{combatRefEdge, 0, 1}
 	f.meleeWeapon = DEFAULT_DAMAGE_DICE
 	f.benniesCount = 3
 
@@ -250,14 +257,16 @@ func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int, bennyS
 
 // Print
 func (npc Fighter) String() string {
-	return fmt.Sprint("Att:", npc.genome[STRENGTH].get(), " ",
-		"VIG:", npc.genome[VIGOR].get(), " ",
-		"STR:", npc.genome[STRENGTH].get(), " ",
+	return fmt.Sprint("STR:", npc.genome[STRENGTH].get(), " ",
 		"AGI:", npc.genome[AGILITY].get(), " ",
+		"VIG:", npc.genome[VIGOR].get(), " ",
 		"SPI:", npc.genome[SPIRIT].get(), " ",
-		"Block:", npc.genome[BLOCK].get(), " ",
-		"BenStr:", npc.genome[BENNY_STRAT].get(), " ",
+		"Att:", npc.genome[STRENGTH].get(), " ",
+		"Block:", npc.genome[EDGE_BLOCK].get(), " ",
+		"TradW:", npc.genome[EDGE_TRADEMARK_W].get(), " ",
+		"CmbRef:", npc.genome[EDGE_COMBAT_REF].get(), " ",
 		"AttMod:", npc.genome[ATTACK_MODE].get(), " ",
+		"BenStr:", npc.genome[BENNY_STRAT].get(), " ",
 		"Cost:", npc.getCost(), " ",
 		"Win:", npc.victory)
 }
