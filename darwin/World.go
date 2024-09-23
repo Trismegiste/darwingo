@@ -129,13 +129,6 @@ func (w *World) Selection() {
 	}
 }
 
-// Prints some info
-func (w *World) Log(howmany int) {
-	for k := 0; k < howmany; k++ {
-		fmt.Println(w.pool[k])
-	}
-}
-
 type GroupInfo struct {
 	GroupCount int
 	Winner     *Fighter

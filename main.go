@@ -45,7 +45,6 @@ func main() {
 
 				world.RunEpoch(maxRound)
 				world.Selection()
-				world.Log(5)
 				stats := world.GetStatPerCost()
 				stats.Epoch = k
 				content, _ := json.Marshal(stats)
