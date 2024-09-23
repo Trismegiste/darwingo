@@ -20,6 +20,7 @@ const (
 	EDGE_BLOCK
 	EDGE_COMBAT_REF
 	EDGE_TRADEMARK_W
+	EDGE_NERVE_STEEL
 )
 
 const DEFAULT_DAMAGE_DICE = 8
@@ -28,7 +29,7 @@ const DEFAULT_DAMAGE_DICE = 8
 type Fighter struct {
 	wounds       int
 	victory      int
-	genome       [10]Gene
+	genome       [11]Gene
 	usedBenny    int
 	benniesCount int
 	shaken       bool
@@ -153,7 +154,12 @@ func (npc *Fighter) rollSkill(idxGenome int8) int {
 }
 
 func (npc *Fighter) getWoundsPenalty() int {
-	return -npc.wounds
+	ignore := npc.genome[EDGE_NERVE_STEEL].(*CappedBonus).get()
+	if npc.wounds > ignore {
+		return ignore - npc.wounds
+	} else {
+		return 0
+	}
 }
 
 // test if the fighter use the given strategy for bennies and if she has a benny left
@@ -237,7 +243,8 @@ func (npc *Fighter) mimic(original *Fighter) {
 
 // Factory
 func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int,
-	bennyStrat int, attMode int, spi int, trademarkEdge int, combatRefEdge int) *Fighter {
+	bennyStrat int, attMode int, spi int, trademarkEdge int, combatRefEdge int,
+	nerveSteel int) *Fighter {
 	f := Fighter{}
 	f.genome[FIGHTING] = &Skill{fighting}
 	f.genome[EDGE_BLOCK] = &CappedBonus{blockEdge, 0, 2}
@@ -249,6 +256,7 @@ func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int,
 	f.genome[ATTACK_MODE] = &WildAttack{attMode}
 	f.genome[EDGE_TRADEMARK_W] = &CappedBonus{trademarkEdge, 0, 2}
 	f.genome[EDGE_COMBAT_REF] = &CappedBonus{combatRefEdge, 0, 1}
+	f.genome[EDGE_NERVE_STEEL] = &CappedBonus{nerveSteel, 0, 2}
 	f.meleeWeapon = DEFAULT_DAMAGE_DICE
 	f.benniesCount = 3
 
@@ -265,6 +273,7 @@ func (npc Fighter) String() string {
 		"Block:", npc.genome[EDGE_BLOCK].get(), " ",
 		"TradW:", npc.genome[EDGE_TRADEMARK_W].get(), " ",
 		"CmbRef:", npc.genome[EDGE_COMBAT_REF].get(), " ",
+		"NervSt:", npc.genome[EDGE_NERVE_STEEL].get(), " ",
 		"AttMod:", npc.genome[ATTACK_MODE].get(), " ",
 		"BenStr:", npc.genome[BENNY_STRAT].get(), " ",
 		"Cost:", npc.getCost(), " ",

@@ -26,6 +26,7 @@ func BuildWorld(size int) *World {
 			random.RandomTrait(),
 			rand.Intn(3),
 			rand.Intn(2),
+			rand.Intn(3),
 		))
 	}
 
