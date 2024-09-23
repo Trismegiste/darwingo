@@ -6,6 +6,7 @@ import (
 	"log"
 	"main/random"
 	"math/rand"
+	"slices"
 )
 
 // Indices of gene in the genome of Fighter
@@ -21,6 +22,8 @@ const (
 	EDGE_COMBAT_REF
 	EDGE_TRADEMARK_W
 	EDGE_NERVE_STEEL
+	EDGE_LEVEL_HEAD
+	EDGE_QUICK_DRAW
 )
 
 const DEFAULT_DAMAGE_DICE = 8
@@ -29,7 +32,7 @@ const DEFAULT_DAMAGE_DICE = 8
 type Fighter struct {
 	wounds       int
 	victory      int
-	genome       [11]Gene
+	genome       [13]Gene
 	usedBenny    int
 	benniesCount int
 	shaken       bool
@@ -216,6 +219,27 @@ func (npc *Fighter) getToughness() int {
 	return npc.genome[VIGOR].(*Attribute).getPassiveDefense()
 }
 
+func (f *Fighter) getInitiative() int {
+	defaultDraw := f.genome[EDGE_LEVEL_HEAD].(*CappedBonus).get() + 1
+
+	var card []int
+	for range defaultDraw {
+		card = append(card, random.PickCard())
+	}
+	choose := slices.Max(card)
+
+	if f.genome[EDGE_QUICK_DRAW].(*CappedBonus).get() == 1 {
+		for range 3 {
+			if choose > 20 {
+				return choose
+			}
+			choose = random.PickCard()
+		}
+	}
+
+	return choose
+}
+
 func (npc *Fighter) incVictory() {
 	npc.victory++
 }
@@ -244,7 +268,7 @@ func (npc *Fighter) mimic(original *Fighter) {
 // Factory
 func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int,
 	bennyStrat int, attMode int, spi int, trademarkEdge int, combatRefEdge int,
-	nerveSteel int) *Fighter {
+	nerveSteel int, levelHead int, quickdraw int) *Fighter {
 	f := Fighter{}
 	f.genome[FIGHTING] = &Skill{fighting}
 	f.genome[EDGE_BLOCK] = &CappedBonus{blockEdge, 0, 2}
@@ -257,6 +281,8 @@ func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int,
 	f.genome[EDGE_TRADEMARK_W] = &CappedBonus{trademarkEdge, 0, 2}
 	f.genome[EDGE_COMBAT_REF] = &CappedBonus{combatRefEdge, 0, 1}
 	f.genome[EDGE_NERVE_STEEL] = &CappedBonus{nerveSteel, 0, 2}
+	f.genome[EDGE_LEVEL_HEAD] = &CappedBonus{levelHead, 0, 2}
+	f.genome[EDGE_QUICK_DRAW] = &CappedBonus{quickdraw, 0, 1}
 	f.meleeWeapon = DEFAULT_DAMAGE_DICE
 	f.benniesCount = 3
 
@@ -274,6 +300,8 @@ func (npc Fighter) String() string {
 		"TradW:", npc.genome[EDGE_TRADEMARK_W].get(), " ",
 		"CmbRef:", npc.genome[EDGE_COMBAT_REF].get(), " ",
 		"NervSt:", npc.genome[EDGE_NERVE_STEEL].get(), " ",
+		"LvlHd:", npc.genome[EDGE_LEVEL_HEAD].get(), " ",
+		"QuDrw:", npc.genome[EDGE_QUICK_DRAW].get(), " ",
 		"AttMod:", npc.genome[ATTACK_MODE].get(), " ",
 		"BenStr:", npc.genome[BENNY_STRAT].get(), " ",
 		"Cost:", npc.getCost(), " ",

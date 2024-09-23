@@ -27,6 +27,8 @@ func BuildWorld(size int) *World {
 			rand.Intn(3),
 			rand.Intn(2),
 			rand.Intn(3),
+			rand.Intn(3),
+			rand.Intn(2),
 		))
 	}
 
@@ -60,6 +62,25 @@ func (w *World) RunEpoch(maxRound int) {
 	}
 }
 
+func runRound(fighter1, fighter2 *Fighter) {
+	init1 := fighter1.getInitiative()
+	init2 := fighter2.getInitiative()
+
+	// default behavior, fighter1 attacks first, if fighter2 has initiative, we swap fighter1 and 2
+	var a, b *Fighter
+	if init2 > init1 {
+		// fighter 2 has init, fighter1 is the first to receive attack from fighter2
+		a = fighter1
+		b = fighter2
+	} else {
+		b = fighter1
+		a = fighter2
+	}
+
+	a.receiveAttack(b) // b is attacking a
+	b.receiveAttack(a) // a is attacking b
+}
+
 // Runs one fight between two fighters
 func runFight(fighter1, fighter2 *Fighter, maxRound int) {
 	// initialise fight
@@ -71,8 +92,7 @@ func runFight(fighter1, fighter2 *Fighter, maxRound int) {
 	for !fighter1.isDead() && !fighter2.isDead() && round < maxRound {
 		fighter1.resetRound()
 		fighter2.resetRound()
-		fighter1.receiveAttack(fighter2)
-		fighter2.receiveAttack(fighter1)
+		runRound(fighter1, fighter2)
 		round++
 	}
 
