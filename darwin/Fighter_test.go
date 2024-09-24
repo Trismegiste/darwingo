@@ -221,3 +221,33 @@ func TestWounds_Equal_NoBias(t *testing.T) {
 	assert.AssertFloat(t, 0.5, avg1, 0.1, "Wounds on fighter 1")
 	assert.AssertFloat(t, 0.5, avg2, 0.1, "Wounds on fighter 2")
 }
+
+func TestUnshakeMedium(t *testing.T) {
+	fighter := BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
+
+	cpt := 0
+	for range enoughIteration {
+		fighter.shaken = true
+		fighter.tryUnshake()
+		if !fighter.shaken {
+			cpt++
+		}
+	}
+	var avg float64 = float64(cpt) / float64(enoughIteration)
+	assert.AssertFloat(t, 0.8, avg, 0.1, "Unshaken try")
+}
+
+func TestUnshakeMedium_WithCombatRef(t *testing.T) {
+	fighter := BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 1, 0, 0, 0)
+
+	cpt := 0
+	for range enoughIteration {
+		fighter.shaken = true
+		fighter.tryUnshake()
+		if !fighter.shaken {
+			cpt++
+		}
+	}
+	var avg float64 = float64(cpt) / float64(enoughIteration)
+	assert.AssertFloat(t, 1, avg, 0.1, "Unshaken try with edge")
+}
