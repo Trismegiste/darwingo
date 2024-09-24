@@ -22,3 +22,19 @@ func TestOneEpoch(t *testing.T) {
 	assert.AssertInt(t, 1, stat.MaxCount, "1 per cost max")
 	assert.AssertInt(t, 1, stat.MaxVictory, "1 victory max")
 }
+
+func TestFullRun(t *testing.T) {
+	world := BuildWorld(100)
+
+	for range 30 {
+		world.RunEpoch(20)
+		world.Selection()
+	}
+	stats := world.GetStatPerCost()
+
+	sum := 0
+	for _, stat := range stats.InfoPerCost {
+		sum += stat.GroupCount
+	}
+	assert.AssertInt(t, 100, sum, "group count sum = fighters total count")
+}

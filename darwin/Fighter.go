@@ -248,6 +248,7 @@ func (npc *Fighter) mutate() {
 	pick.mutate()
 }
 
+// Mimic the genome (we don't use a straight clone for speed, other properties are reset at the next epoch)
 func (npc *Fighter) mimic(original *Fighter) {
 	for idx, gene := range npc.genome {
 		gene.set(original.genome[idx].get())
