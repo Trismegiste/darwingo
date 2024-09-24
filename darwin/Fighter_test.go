@@ -138,3 +138,33 @@ func TestDefaultInitiative_WithLevelHead(t *testing.T) {
 	var avg float64 = float64(sum) / float64(enoughIteration)
 	assert.AssertFloat(t, 36.5, avg, 0.1, "Average of Initiative card with Level Head")
 }
+
+func TestVictory(t *testing.T) {
+	var f *Fighter = BuildFighter(8, 1, 6, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	assert.AssertInt(t, 0, f.victory, "Default value for victory")
+	f.incVictory()
+	assert.AssertInt(t, 1, f.victory, "Incrementing victory")
+}
+
+func TestWounds(t *testing.T) {
+	var weak *Fighter = BuildFighter(4, 0, 4, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var strong *Fighter = BuildFighter(12, 2, 12, 12, 12, BENNY_TO_SOAK, ATTMODE_WILD, 12, 2, 1, 2, 2, 1)
+
+	var cumulWound [2]int
+
+	for range enoughIteration {
+		strong.resetFight()
+		weak.resetFight()
+		strong.receiveAttack(weak)
+		weak.receiveAttack(strong)
+		cumulWound[0] += weak.wounds
+		cumulWound[1] += strong.victory
+	}
+
+	var avgWeak float64 = float64(cumulWound[0]) / float64(enoughIteration)
+	var avgStrong float64 = float64(cumulWound[1]) / float64(enoughIteration)
+
+	assert.AssertFloat(t, 2.8, avgWeak, 0.1, "Wounds on weak")
+	assert.AssertFloat(t, 0, avgStrong, 0.1, "Wounds on strong")
+
+}
