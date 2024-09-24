@@ -2,6 +2,8 @@ package darwin
 
 import "math/rand"
 
+const QUICK_DRAW_MIN_CARD = 20
+
 // BONUS
 type CappedBonus struct {
 	value int

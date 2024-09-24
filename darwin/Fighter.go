@@ -6,7 +6,6 @@ import (
 	"log"
 	"main/random"
 	"math/rand"
-	"slices"
 )
 
 // Indices of gene in the genome of Fighter
@@ -221,20 +220,10 @@ func (npc *Fighter) getToughness() int {
 
 func (f *Fighter) getInitiative() int {
 	defaultDraw := f.genome[EDGE_LEVEL_HEAD].(*CappedBonus).get() + 1
+	choose := random.PickBestCard(defaultDraw)
 
-	var card []int
-	for range defaultDraw {
-		card = append(card, random.PickCard())
-	}
-	choose := slices.Max(card)
-
-	if f.genome[EDGE_QUICK_DRAW].(*CappedBonus).get() == 1 {
-		for range 3 {
-			if choose > 20 {
-				return choose
-			}
-			choose = random.PickCard()
-		}
+	if choose <= QUICK_DRAW_MIN_CARD && f.genome[EDGE_QUICK_DRAW].(*CappedBonus).get() == 1 {
+		choose = random.PickFirstCardAbove(QUICK_DRAW_MIN_CARD, 3)
 	}
 
 	return choose

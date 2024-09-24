@@ -109,7 +109,7 @@ func Test_HighFighterCost(t *testing.T) {
 func TestDefaultInitiative(t *testing.T) {
 	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
 	sum := 0
-	for k := 0; k < enoughIteration; k++ {
+	for range enoughIteration {
 		sum += f.getInitiative()
 	}
 
@@ -120,10 +120,21 @@ func TestDefaultInitiative(t *testing.T) {
 func TestDefaultInitiative_WithQuickDraw(t *testing.T) {
 	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 1)
 	sum := 0
-	for k := 0; k < enoughIteration; k++ {
+	for range enoughIteration {
 		sum += f.getInitiative()
 	}
 
 	var avg float64 = float64(sum) / float64(enoughIteration)
 	assert.AssertFloat(t, 37, avg, 0.1, "Average of Initiative card with Quick Draw")
+}
+
+func TestDefaultInitiative_WithLevelHead(t *testing.T) {
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 1, 0)
+	sum := 0
+	for range enoughIteration {
+		sum += f.getInitiative()
+	}
+
+	var avg float64 = float64(sum) / float64(enoughIteration)
+	assert.AssertFloat(t, 36.5, avg, 0.1, "Average of Initiative card with Level Head")
 }

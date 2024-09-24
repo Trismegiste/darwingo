@@ -66,3 +66,13 @@ func TestAverageJokerRollingD12(t *testing.T) {
 	var avg float64 = float64(sum) / float64(enoughIteration)
 	assert.AssertFloat(t, 8.0, avg, 0.1, "Average of joker roll d12")
 }
+
+func TestAverageRandomizeTrait(t *testing.T) {
+	sum := 0
+	for k := 0; k < enoughIteration; k++ {
+		sum += RandomTrait()
+	}
+
+	var avg float64 = float64(sum) / float64(enoughIteration)
+	assert.AssertFloat(t, 8.0, avg, 0.1, "Average of randomized trait")
+}
