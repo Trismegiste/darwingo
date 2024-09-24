@@ -1,6 +1,7 @@
 package darwin
 
 import (
+	"encoding/json"
 	"main/assert"
 	"math/rand"
 	"testing"
@@ -250,4 +251,12 @@ func TestUnshakeMedium_WithCombatRef(t *testing.T) {
 	}
 	var avg float64 = float64(cpt) / float64(enoughIteration)
 	assert.AssertFloat(t, 1, avg, 0.1, "Unshaken try with edge")
+}
+
+func TestMarshallJSON(t *testing.T) {
+	fighter := BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 1, 0, 0, 0)
+	content, _ := json.Marshal(fighter)
+	if content[0] != '{' {
+		t.Fatal("JSON does not start with '{'")
+	}
 }

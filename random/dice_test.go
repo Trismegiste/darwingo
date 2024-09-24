@@ -9,7 +9,7 @@ const enoughIteration = 1000000
 
 func TestAverageExplodingD4(t *testing.T) {
 	sum := 0
-	for k := 0; k < enoughIteration; k++ {
+	for range enoughIteration {
 		sum += ExplodingDice(4)
 	}
 
@@ -19,7 +19,7 @@ func TestAverageExplodingD4(t *testing.T) {
 
 func TestAverageExplodingD6(t *testing.T) {
 	sum := 0
-	for k := 0; k < enoughIteration; k++ {
+	for range enoughIteration {
 		sum += ExplodingDice(6)
 	}
 
@@ -29,7 +29,7 @@ func TestAverageExplodingD6(t *testing.T) {
 
 func TestAverageExplodingD8(t *testing.T) {
 	sum := 0
-	for k := 0; k < enoughIteration; k++ {
+	for range enoughIteration {
 		sum += ExplodingDice(8)
 	}
 
@@ -39,7 +39,7 @@ func TestAverageExplodingD8(t *testing.T) {
 
 func TestAverageExplodingD12(t *testing.T) {
 	sum := 0
-	for k := 0; k < enoughIteration; k++ {
+	for range enoughIteration {
 		sum += ExplodingDice(12)
 	}
 
@@ -49,7 +49,7 @@ func TestAverageExplodingD12(t *testing.T) {
 
 func TestAverageJokerRollingD4(t *testing.T) {
 	sum := 0
-	for k := 0; k < enoughIteration; k++ {
+	for range enoughIteration {
 		sum += JokerRoll(4)
 	}
 
@@ -59,7 +59,7 @@ func TestAverageJokerRollingD4(t *testing.T) {
 
 func TestAverageJokerRollingD12(t *testing.T) {
 	sum := 0
-	for k := 0; k < enoughIteration; k++ {
+	for range enoughIteration {
 		sum += JokerRoll(12)
 	}
 
@@ -69,10 +69,30 @@ func TestAverageJokerRollingD12(t *testing.T) {
 
 func TestAverageRandomizeTrait(t *testing.T) {
 	sum := 0
-	for k := 0; k < enoughIteration; k++ {
+	for range enoughIteration {
 		sum += RandomTrait()
 	}
 
 	var avg float64 = float64(sum) / float64(enoughIteration)
 	assert.AssertFloat(t, 8.0, avg, 0.1, "Average of randomized trait")
+}
+
+func TestJokerRollRateOfFire1(t *testing.T) {
+	sum := 0
+	for range enoughIteration {
+		sum += JokerRollRateOfFire(12, 1)[0] // the same as TestAverageJokerRollingD12 above
+	}
+
+	var avg float64 = float64(sum) / float64(enoughIteration)
+	assert.AssertFloat(t, 8.0, avg, 0.1, "Average of joker roll with RoF=1 for d12")
+}
+
+func TestJokerRollRateOfFire3(t *testing.T) {
+	sum := 0
+	for range enoughIteration {
+		sum += JokerRollRateOfFire(12, 3)[0]
+	}
+
+	var avg float64 = float64(sum) / float64(enoughIteration)
+	assert.AssertFloat(t, 11.4, avg, 0.1, "Average of joker roll with RoF=3 (3d12 + d6)keep3")
 }

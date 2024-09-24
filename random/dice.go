@@ -2,6 +2,7 @@ package random
 
 import (
 	"math/rand"
+	"slices"
 )
 
 // Rolls one die that can explode (the max number of the die means it is re-rolled and added)
@@ -24,4 +25,19 @@ func JokerRoll(side int) int {
 
 func RandomTrait() int {
 	return 4 + 2*rand.Intn(5)
+}
+
+func JokerRollRateOfFire(side int, rate int) []int {
+	dice := make([]int, rate+1) // +1 for the wild die
+
+	for k := range rate {
+		dice[k] = ExplodingDice(side)
+	}
+	dice = append(dice, ExplodingDice(6))
+
+	slices.SortFunc(dice, func(a, b int) int {
+		return b - a
+	})
+
+	return dice[:rate]
 }
