@@ -2,6 +2,7 @@ package darwin
 
 import (
 	"main/assert"
+	"math/rand"
 	"testing"
 )
 
@@ -146,7 +147,7 @@ func TestVictory(t *testing.T) {
 	assert.AssertInt(t, 1, f.victory, "Incrementing victory")
 }
 
-func TestWounds(t *testing.T) {
+func TestWounds_BigCostDifference(t *testing.T) {
 	var weak *Fighter = BuildFighter(4, 0, 4, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
 	var strong *Fighter = BuildFighter(12, 2, 12, 12, 12, BENNY_TO_SOAK, ATTMODE_WILD, 12, 2, 1, 2, 2, 1)
 
@@ -158,7 +159,7 @@ func TestWounds(t *testing.T) {
 		strong.receiveAttack(weak)
 		weak.receiveAttack(strong)
 		cumulWound[0] += weak.wounds
-		cumulWound[1] += strong.victory
+		cumulWound[1] += strong.wounds
 	}
 
 	var avgWeak float64 = float64(cumulWound[0]) / float64(enoughIteration)
@@ -167,4 +168,56 @@ func TestWounds(t *testing.T) {
 	assert.AssertFloat(t, 2.8, avgWeak, 0.1, "Wounds on weak")
 	assert.AssertFloat(t, 0, avgStrong, 0.1, "Wounds on strong")
 
+}
+
+func TestWounds_Equal_But_InitiativeBias(t *testing.T) {
+	var f1 *Fighter = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
+	var f2 *Fighter = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
+
+	var cumulWound [2]int
+
+	for range enoughIteration {
+		f2.resetFight()
+		f1.resetFight()
+		f2.receiveAttack(f1) // f2 is wounded first
+		f1.receiveAttack(f2)
+		cumulWound[0] += f1.wounds
+		cumulWound[1] += f2.wounds
+	}
+
+	var avg1 float64 = float64(cumulWound[0]) / float64(enoughIteration)
+	var avg2 float64 = float64(cumulWound[1]) / float64(enoughIteration)
+
+	assert.AssertFloat(t, 0.3, avg1, 0.1, "Wounds on fighter 1")
+	assert.AssertFloat(t, 0.7, avg2, 0.1, "Wounds on fighter 2")
+}
+
+func TestWounds_Equal_NoBias(t *testing.T) {
+	var fighter [2]*Fighter
+	var cumulWound [2]int
+
+	fighter[0] = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
+	fighter[1] = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
+
+	for range enoughIteration {
+		fighter[0].resetFight()
+		fighter[1].resetFight()
+		// randomize intiative
+		if rand.Intn(2) == 0 {
+			fighter[1].receiveAttack(fighter[0])
+			fighter[0].receiveAttack(fighter[1])
+		} else {
+			fighter[0].receiveAttack(fighter[1])
+			fighter[1].receiveAttack(fighter[0])
+		}
+
+		cumulWound[0] += fighter[0].wounds
+		cumulWound[1] += fighter[1].wounds
+	}
+
+	var avg1 float64 = float64(cumulWound[0]) / float64(enoughIteration)
+	var avg2 float64 = float64(cumulWound[1]) / float64(enoughIteration)
+
+	assert.AssertFloat(t, 0.5, avg1, 0.1, "Wounds on fighter 1")
+	assert.AssertFloat(t, 0.5, avg2, 0.1, "Wounds on fighter 2")
 }
