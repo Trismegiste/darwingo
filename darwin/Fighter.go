@@ -2,7 +2,6 @@ package darwin
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"main/random"
 	"math/rand"
@@ -281,21 +280,8 @@ func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int,
 
 // Print
 func (npc Fighter) String() string {
-	return fmt.Sprint("STR:", npc.genome[STRENGTH].get(), " ",
-		"AGI:", npc.genome[AGILITY].get(), " ",
-		"VIG:", npc.genome[VIGOR].get(), " ",
-		"SPI:", npc.genome[SPIRIT].get(), " ",
-		"Fight:", npc.genome[FIGHTING].get(), " ",
-		"Block:", npc.genome[EDGE_BLOCK].get(), " ",
-		"TradW:", npc.genome[EDGE_TRADEMARK_W].get(), " ",
-		"CmbRef:", npc.genome[EDGE_COMBAT_REF].get(), " ",
-		"NervSt:", npc.genome[EDGE_NERVE_STEEL].get(), " ",
-		"LvlHd:", npc.genome[EDGE_LEVEL_HEAD].get(), " ",
-		"QuDrw:", npc.genome[EDGE_QUICK_DRAW].get(), " ",
-		"AttMod:", npc.genome[ATTACK_MODE].get(), " ",
-		"BenStr:", npc.genome[BENNY_STRAT].get(), " ",
-		"Cost:", npc.getCost(), " ",
-		"Win:", npc.victory)
+	dump, _ := json.Marshal(npc)
+	return string(dump[:])
 }
 
 func (f Fighter) MarshalJSON() ([]byte, error) {
