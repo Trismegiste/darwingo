@@ -44,11 +44,11 @@ func main() {
 				fmt.Println("===========", "Epoch", k, "===========")
 
 				world.RunEpoch(maxRound)
-				world.Selection()
 				stats := world.GetStatPerCost()
 				stats.Epoch = k
 				content, _ := json.Marshal(stats)
 				fmt.Fprintf(w, "data: %s\n\n", content)
+				world.Selection()
 
 				err := w.Flush()
 				if err != nil {
@@ -62,10 +62,14 @@ func main() {
 			}
 
 			fmt.Fprintf(w, "data: Done\n\n")
+			exportLdjson(world)
 		}))
 
 		return nil
 	})
 
 	log.Fatal(app.Listen(":3000"))
+}
+
+func exportLdjson(w *darwin.World) {
 }

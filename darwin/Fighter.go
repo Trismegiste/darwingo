@@ -285,7 +285,7 @@ func (npc Fighter) String() string {
 		"AGI:", npc.genome[AGILITY].get(), " ",
 		"VIG:", npc.genome[VIGOR].get(), " ",
 		"SPI:", npc.genome[SPIRIT].get(), " ",
-		"Att:", npc.genome[STRENGTH].get(), " ",
+		"Fight:", npc.genome[FIGHTING].get(), " ",
 		"Block:", npc.genome[EDGE_BLOCK].get(), " ",
 		"TradW:", npc.genome[EDGE_TRADEMARK_W].get(), " ",
 		"CmbRef:", npc.genome[EDGE_COMBAT_REF].get(), " ",
@@ -300,10 +300,35 @@ func (npc Fighter) String() string {
 
 func (f Fighter) MarshalJSON() ([]byte, error) {
 	return json.Marshal(struct {
-		Detail  string
 		Victory int
+		Cost    int
+		STR     int
+		AGI     int
+		VIG     int
+		SPI     int
+		Fight   int
+		Block   int
+		TradW   int
+		CmbRef  int
+		NervSt  int
+		LvlHd   int
+		QuDrw   int
+		AttMod  int
+		BenStr  int
 	}{
-		Detail:  f.String(),
 		Victory: f.victory,
+		Cost:    f.getCost(),
+		STR:     f.genome[STRENGTH].get(),
+		AGI:     f.genome[AGILITY].get(),
+		VIG:     f.genome[VIGOR].get(),
+		SPI:     f.genome[SPIRIT].get(),
+		Fight:   f.genome[FIGHTING].get(),
+		Block:   f.genome[EDGE_BLOCK].get(),
+		TradW:   f.genome[EDGE_TRADEMARK_W].get(),
+		CmbRef:  f.genome[EDGE_COMBAT_REF].get(),
+		NervSt:  f.genome[EDGE_NERVE_STEEL].get(),
+		QuDrw:   f.genome[EDGE_QUICK_DRAW].get(),
+		AttMod:  f.genome[ATTACK_MODE].get(),
+		BenStr:  f.genome[BENNY_STRAT].get(),
 	})
 }
