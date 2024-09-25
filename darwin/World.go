@@ -1,9 +1,11 @@
 package darwin
 
 import (
+	"encoding/json"
 	"fmt"
 	"main/random"
 	"math/rand"
+	"os"
 	"slices"
 )
 
@@ -173,4 +175,17 @@ func (w *World) GetStatPerCost() *CostStat {
 	}
 
 	return stat
+}
+
+func (w *World) ExportLdjson(filename string) {
+	f, err := os.Create(filename)
+	if err != nil {
+		panic(err)
+	}
+	defer f.Close()
+	enc := json.NewEncoder(f)
+
+	for _, fighter := range w.pool {
+		enc.Encode(fighter) // LD-JSON format
+	}
 }

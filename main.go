@@ -62,14 +62,11 @@ func main() {
 			}
 
 			fmt.Fprintf(w, "data: Done\n\n")
-			exportLdjson(world)
+			world.ExportLdjson("export.json")
 		}))
 
 		return nil
 	})
 
 	log.Fatal(app.Listen(":3000"))
-}
-
-func exportLdjson(w *darwin.World) {
 }
