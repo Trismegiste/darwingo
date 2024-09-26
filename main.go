@@ -62,7 +62,7 @@ func main() {
 			}
 
 			fmt.Fprintf(w, "data: Done\n\n")
-			world.ExportLdjson("export.json")
+			world.ExportLdjson("sawo-export.json")
 		}))
 
 		return nil
