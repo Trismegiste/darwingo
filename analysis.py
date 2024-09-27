@@ -13,4 +13,7 @@ regr = linear_model.LinearRegression()
 regr.fit(X, Y)
 
 print("Coeff")
-print(regr.coef_ * 100)
+pct = regr.coef_ * 100
+
+for idx, name in enumerate(X.columns):
+    print(name, "\t% .1f%%" % pct[idx])
