@@ -8,6 +8,7 @@ import (
 	"main/darwin"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/template/django/v3"
 	"github.com/valyala/fasthttp"
 )
@@ -18,6 +19,7 @@ func main() {
 	app := fiber.New(fiber.Config{
 		Views: engine,
 	})
+	app.Use(cors.New())
 
 	app.Static("/css", "./public/css")
 	app.Static("/esm", "./public/esm")
