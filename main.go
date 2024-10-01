@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"main/darwin"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
@@ -42,8 +43,9 @@ func main() {
 			fmt.Println("Start simulation")
 			world := darwin.BuildWorld(poolSize)
 
+			start := time.Now()
 			for k := range maxEpoch {
-				fmt.Println("===========", "Epoch", k, "===========")
+				fmt.Println("===========", "Epoch", k, "===========", time.Since(start))
 
 				world.RunEpoch(maxRound)
 				stats := world.GetStatPerCost()
