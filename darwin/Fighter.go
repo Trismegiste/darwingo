@@ -5,6 +5,7 @@ import (
 	"log"
 	"main/random"
 	"math/rand"
+	"slices"
 )
 
 // Indices of gene in the genome of Fighter
@@ -16,6 +17,7 @@ const (
 	FIGHTING
 	BENNY_STRAT
 	ATTACK_MODE
+	EDGE_FRENZY
 	EDGE_BLOCK
 	EDGE_COMBAT_REF
 	EDGE_TRADEMARK_W
@@ -30,7 +32,7 @@ const DEFAULT_DAMAGE_DICE = 8
 type Fighter struct {
 	wounds       int
 	victory      int
-	genome       [13]Gene
+	genome       [14]Gene
 	usedBenny    int
 	benniesCount int
 	shaken       bool
@@ -55,24 +57,26 @@ func (f *Fighter) tryUnshake() {
 	}
 }
 
-func (npc *Fighter) getAttackRoll() int {
+func (npc *Fighter) getAttackRoll() []int {
 	// if shaken, no attack
 	if npc.shaken {
-		return 0
+		return []int{}
 	}
 
-	att := npc.rollSkill(FIGHTING)
+	att := npc.rollSkillRoF(FIGHTING, 1+npc.genome[EDGE_FRENZY].(*CappedBonus).get())
 
 	// if attack has failed and the benny strategy is attack, re-roll with a benny (if any benny left)
-	if att < 4 && npc.canUseBennyStrategy(BENNY_TO_ATTACK) {
+	if slices.Max(att) < 4 && npc.canUseBennyStrategy(BENNY_TO_ATTACK) {
 		npc.useBenny()
-		att = npc.rollSkill(FIGHTING)
+		att = npc.rollSkillRoF(FIGHTING, 1+npc.genome[EDGE_FRENZY].(*CappedBonus).get())
 	}
 
-	// add bonus from wild attack
-	att += npc.genome[ATTACK_MODE].(*WildAttack).getAttBonus()
-	// add bonus from Trademark Weapon Edge
-	att += npc.genome[EDGE_TRADEMARK_W].(*CappedBonus).get()
+	for val := range att {
+		// add bonus from wild attack
+		val += npc.genome[ATTACK_MODE].(*WildAttack).getAttBonus()
+		// add bonus from Trademark Weapon Edge
+		val += npc.genome[EDGE_TRADEMARK_W].(*CappedBonus).get()
+	}
 
 	return att
 }
@@ -83,15 +87,17 @@ func (npc *Fighter) getFighting() int {
 }
 
 func (target *Fighter) receiveAttack(attacker *Fighter) {
-	delta := attacker.getAttackRoll() - target.getParry()
-	if delta >= 0 {
-		// hit ! Calculate the damage
-		damage := attacker.getDamageRoll()
-		// Raise ?
-		if delta >= 4 {
-			damage += random.ExplodingDice(6)
+	for att := range attacker.getAttackRoll() {
+		delta := att - target.getParry()
+		if delta >= 0 {
+			// hit ! Calculate the damage
+			damage := attacker.getDamageRoll()
+			// Raise ?
+			if delta >= 4 {
+				damage += random.ExplodingDice(6)
+			}
+			target.receiveDamage(damage)
 		}
-		target.receiveDamage(damage)
 	}
 }
 
@@ -154,6 +160,16 @@ func (npc *Fighter) rollSkill(idxGenome int8) int {
 	return random.JokerRoll(npc.genome[idxGenome].(*Skill).get()) + npc.getWoundsPenalty()
 }
 
+func (npc *Fighter) rollSkillRoF(idxGenome int8, rof int) []int {
+	// transcast to Skill is not mandatory but it prevents to use a CappedBonus or a Strategy by mistake
+	pool := random.JokerRollRateOfFire(npc.genome[idxGenome].(*Skill).get(), rof)
+	for val := range pool {
+		val += npc.getWoundsPenalty()
+	}
+
+	return pool
+}
+
 func (npc *Fighter) getWoundsPenalty() int {
 	ignore := npc.genome[EDGE_NERVE_STEEL].(*CappedBonus).get()
 	if npc.wounds > ignore {
@@ -182,7 +198,7 @@ func (npc *Fighter) getDamageRoll() int {
 }
 
 func (npc *Fighter) rollDamage() int {
-	str := npc.genome[STRENGTH].get()
+	str := npc.genome[STRENGTH].(*Attribute).get()
 	damageDice := npc.meleeWeapon
 	if damageDice > str {
 		damageDice = str
@@ -256,7 +272,7 @@ func (npc *Fighter) mimic(original *Fighter) {
 
 // Factory
 func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int,
-	bennyStrat int, attMode int, spi int, trademarkEdge int, combatRefEdge int,
+	bennyStrat int, attMode int, spi int, frenzyEdge int, trademarkEdge int, combatRefEdge int,
 	nerveSteel int, levelHead int, quickdraw int) *Fighter {
 	f := Fighter{}
 	f.genome[FIGHTING] = &Skill{fighting}
@@ -267,6 +283,7 @@ func BuildFighter(fighting int, blockEdge int, vig int, str int, agi int,
 	f.genome[SPIRIT] = &Attribute{spi}
 	f.genome[BENNY_STRAT] = &Strategy{bennyStrat, 4}
 	f.genome[ATTACK_MODE] = &WildAttack{attMode}
+	f.genome[EDGE_FRENZY] = &CappedBonus{frenzyEdge, 0, 2}
 	f.genome[EDGE_TRADEMARK_W] = &CappedBonus{trademarkEdge, 0, 2}
 	f.genome[EDGE_COMBAT_REF] = &CappedBonus{combatRefEdge, 0, 1}
 	f.genome[EDGE_NERVE_STEEL] = &CappedBonus{nerveSteel, 0, 2}
@@ -293,6 +310,7 @@ func (f Fighter) MarshalJSON() ([]byte, error) {
 		VIG     int
 		SPI     int
 		Fight   int
+		Frenz   int
 		Block   int
 		TradW   int
 		CmbRef  int
@@ -309,6 +327,7 @@ func (f Fighter) MarshalJSON() ([]byte, error) {
 		VIG:     f.genome[VIGOR].get(),
 		SPI:     f.genome[SPIRIT].get(),
 		Fight:   f.genome[FIGHTING].get(),
+		Frenz:   f.genome[EDGE_FRENZY].get(),
 		Block:   f.genome[EDGE_BLOCK].get(),
 		TradW:   f.genome[EDGE_TRADEMARK_W].get(),
 		CmbRef:  f.genome[EDGE_COMBAT_REF].get(),

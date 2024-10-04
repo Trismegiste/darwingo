@@ -10,7 +10,7 @@ import (
 const enoughIteration = 1000000
 
 func TestFactory(t *testing.T) {
-	var f *Fighter = BuildFighter(8, 1, 6, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(8, 1, 6, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 
 	assert.AssertInt(t, 8, f.getFighting(), "Fighting skill initialisation")
 	assert.AssertInt(t, 7, f.getParry(), "Parry")
@@ -19,7 +19,7 @@ func TestFactory(t *testing.T) {
 }
 
 func TestAttackRoll(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SHAKEN, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SHAKEN, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getAttackRoll()
@@ -30,7 +30,7 @@ func TestAttackRoll(t *testing.T) {
 }
 
 func TestAttackRollWithBenny(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_ATTACK, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_ATTACK, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getAttackRoll()
@@ -42,7 +42,7 @@ func TestAttackRollWithBenny(t *testing.T) {
 }
 
 func TestDamageRollWithCappedStrength(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SOAK, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_SOAK, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -55,7 +55,7 @@ func TestDamageRollWithCappedStrength(t *testing.T) {
 }
 
 func TestDamageRollWithStrength_D8(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 8, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 8, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -67,7 +67,7 @@ func TestDamageRollWithStrength_D8(t *testing.T) {
 }
 
 func TestDamageRollWithStrength_D12(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 12, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 12, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -79,7 +79,7 @@ func TestDamageRollWithStrength_D12(t *testing.T) {
 }
 
 func TestDamageRollWithStrength_D4_And_Benny(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 	sum := 0
 	for k := 0; k < enoughIteration; k++ {
 		sum += f.getDamageRoll()
@@ -91,25 +91,25 @@ func TestDamageRollWithStrength_D4_And_Benny(t *testing.T) {
 }
 
 func Test_ZeroFighterCost(t *testing.T) {
-	var f *Fighter = BuildFighter(4, 0, 4, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(4, 0, 4, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 
 	assert.AssertInt(t, 0, f.getCost(), "Cost should be equal to 0")
 }
 
 func Test_MiddleFighterCost(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 1, 6, 6, 6, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(12, 1, 6, 6, 6, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 
 	assert.AssertInt(t, (1+6)+2+2+2+2, f.getCost(), "Cost should be equal to 15")
 }
 
 func Test_HighFighterCost(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 1, 10, 8, 10, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(12, 1, 10, 8, 10, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 
 	assert.AssertInt(t, (3+2)+2+6+4+6, f.getCost(), "Cost should be equal to 23")
 }
 
 func TestDefaultInitiative(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 	sum := 0
 	for range enoughIteration {
 		sum += f.getInitiative()
@@ -120,7 +120,7 @@ func TestDefaultInitiative(t *testing.T) {
 }
 
 func TestDefaultInitiative_WithQuickDraw(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 1)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 1)
 	sum := 0
 	for range enoughIteration {
 		sum += f.getInitiative()
@@ -131,7 +131,7 @@ func TestDefaultInitiative_WithQuickDraw(t *testing.T) {
 }
 
 func TestDefaultInitiative_WithLevelHead(t *testing.T) {
-	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 1, 0)
+	var f *Fighter = BuildFighter(12, 0, 4, 4, 4, BENNY_TO_DAMAGE, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 1, 0)
 	sum := 0
 	for range enoughIteration {
 		sum += f.getInitiative()
@@ -142,15 +142,15 @@ func TestDefaultInitiative_WithLevelHead(t *testing.T) {
 }
 
 func TestVictory(t *testing.T) {
-	var f *Fighter = BuildFighter(8, 1, 6, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
+	var f *Fighter = BuildFighter(8, 1, 6, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
 	assert.AssertInt(t, 0, f.victory, "Default value for victory")
 	f.incVictory()
 	assert.AssertInt(t, 1, f.victory, "Incrementing victory")
 }
 
 func TestWounds_BigCostDifference(t *testing.T) {
-	var weak *Fighter = BuildFighter(4, 0, 4, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0)
-	var strong *Fighter = BuildFighter(12, 2, 12, 12, 12, BENNY_TO_SOAK, ATTMODE_WILD, 12, 2, 1, 2, 2, 1)
+	var weak *Fighter = BuildFighter(4, 0, 4, 4, 4, 0, ATTMODE_STANDARD, 4, 0, 0, 0, 0, 0, 0)
+	var strong *Fighter = BuildFighter(12, 2, 12, 12, 12, BENNY_TO_SOAK, ATTMODE_WILD, 12, 2, 2, 1, 2, 2, 1)
 
 	var cumulWound [2]int
 
@@ -172,8 +172,8 @@ func TestWounds_BigCostDifference(t *testing.T) {
 }
 
 func TestWounds_Equal_But_InitiativeBias(t *testing.T) {
-	var f1 *Fighter = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
-	var f2 *Fighter = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
+	var f1 *Fighter = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 1, 0, 0, 0, 0, 0)
+	var f2 *Fighter = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 1, 0, 0, 0, 0, 0)
 
 	var cumulWound [2]int
 
@@ -197,8 +197,8 @@ func TestWounds_Equal_NoBias(t *testing.T) {
 	var fighter [2]*Fighter
 	var cumulWound [2]int
 
-	fighter[0] = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
-	fighter[1] = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
+	fighter[0] = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0, 0)
+	fighter[1] = BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0, 0)
 
 	for range enoughIteration {
 		fighter[0].resetFight()
@@ -224,7 +224,7 @@ func TestWounds_Equal_NoBias(t *testing.T) {
 }
 
 func TestUnshakeMedium(t *testing.T) {
-	fighter := BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0)
+	fighter := BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 0, 0, 0, 0)
 
 	cpt := 0
 	for range enoughIteration {
@@ -239,7 +239,7 @@ func TestUnshakeMedium(t *testing.T) {
 }
 
 func TestUnshakeMedium_WithCombatRef(t *testing.T) {
-	fighter := BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 1, 0, 0, 0)
+	fighter := BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 1, 0, 0, 0)
 
 	cpt := 0
 	for range enoughIteration {
@@ -254,7 +254,7 @@ func TestUnshakeMedium_WithCombatRef(t *testing.T) {
 }
 
 func TestMarshallJSON(t *testing.T) {
-	fighter := BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 1, 0, 0, 0)
+	fighter := BuildFighter(8, 0, 8, 8, 8, 0, ATTMODE_STANDARD, 8, 0, 0, 1, 0, 0, 0)
 	content, _ := json.Marshal(fighter)
 	if content[0] != '{' {
 		t.Fatal("JSON does not start with '{'")

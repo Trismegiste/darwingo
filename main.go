@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"main/darwin"
+	"math/rand"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -14,7 +15,7 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-func main() {
+func main2() {
 	// Create a new engine
 	engine := django.New("./views", ".html")
 	app := fiber.New(fiber.Config{
@@ -73,4 +74,46 @@ func main() {
 	})
 
 	log.Fatal(app.Listen(":3000"))
+}
+
+func rolld6() int {
+	roll := 1 + rand.Intn(6)
+	switch roll {
+	case 4, 5:
+		return 1
+	case 6:
+		return 2
+	}
+	return 0
+}
+
+func rollPoolD6(n int) int {
+	sum := 0
+	for range n {
+		sum += rolld6()
+	}
+	return sum
+}
+
+const maxIter = 10000000
+
+func main() {
+	for ndice := 1; ndice <= 10; ndice++ {
+		var counter [20]int
+		sum := 0
+		for range maxIter {
+			succ := rollPoolD6(ndice)
+			counter[succ]++
+			sum += succ
+		}
+		fmt.Println(ndice, counter)
+
+		var pct [20]float64
+		cumul := maxIter
+		for idx, count := range counter {
+			pct[idx] = float64(100*cumul) / float64(maxIter)
+			cumul -= count
+		}
+		fmt.Println(pct, "\n")
+	}
 }
